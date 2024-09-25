@@ -304,7 +304,7 @@ init: (videoTag,playerTagId,defaultId)=>{
     });//promise
     },
     
-setVideo: (videoId)=>{
+changeVideo: (videoId)=>{
     if(csPlayer.initialized){
     player.loadVideoById(videoId);
     playerId = videoId;   
