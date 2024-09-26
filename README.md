@@ -66,8 +66,8 @@ Parameter given is the video id of the youtube video.
 
 <script src="csPlayer.js"></script>
 <script>
-csPlayer.init("#video","player","wsTb0s3uezw")
-// csPlayer.setVideo("ggMiqW0JXTs");
+csPlayer.init("#video","player","bTqVqk7FSmY")
+// csPlayer.setVideo("bTqVqk7FSmY");
 </script>
 </body>
 </html>
