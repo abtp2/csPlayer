@@ -1,8 +1,9 @@
 ## csPlayer
 A custom youtube video player, based on Javascript.
 
-> [!WARNING]  
-> The only thing to take care is that, youtube video title should be more then 5-10 letters. Else title will be visible inside the player.
+> [!WARNING]
+> Youtube video title shouldn't be more then 5-10 letters. Else title will be visible inside the player.
+> Captions should be off.
 
 ### Installing
 To start using Bolt, download `csPlayer.css` and `csPlayer.js` file from above.
