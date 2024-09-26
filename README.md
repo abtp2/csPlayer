@@ -2,7 +2,8 @@
 A custom youtube video player, based on Javascript.
 
 > [!WARNING]
-> Youtube video title shouldn't be more then 5-10 letters. Else title will be visible inside the player.
+> Youtube video title shouldn't be more then 5-10 letters, else title will be visible inside the player.
+> 
 > Captions should be off.
 
 ### Installing
