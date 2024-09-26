@@ -74,3 +74,7 @@ csPlayer.init("#video","player","bTqVqk7FSmY")
 </body>
 </html>
 ```
+
+
+### Screenshots
+![screenshots](https://i.ibb.co/Tqtxqp0/20240926-123313.jpg)
