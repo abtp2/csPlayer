@@ -8,7 +8,7 @@ background: rgba(var(--playerBg),1);
 display: flex;
 flex-direction: column;
 justify-content: center;
-width: 90%;
+width: 100%;
 aspect-ratio: 16/9;
 margin: 2rem auto;
 position: relative; 
