@@ -10,7 +10,7 @@ flex-direction: column;
 justify-content: center;
 width: 100%;
 aspect-ratio: 16/9;
-margin: 2rem auto;
+margin: 0 auto;
 position: relative; 
 border: 1px solid rgba(var(--playerColor),1);
 border-radius: 10px;
