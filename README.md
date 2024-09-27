@@ -26,7 +26,7 @@ Via CDN:
 - getCurrentTime()
 - Initialized
 
-### 1) init()
+### 1. init()
 This will initiate csPlayer in the document.
 ```js
 csPlayer.init("#video","bTqVqk7FSmY");
@@ -47,7 +47,7 @@ console.log("Error", error);
 });
 ```
 
-### 2) changeVideo()
+### 2. changeVideo()
 This will change the video of the current player.
 ```js
 csPlayer.changeVideo("#video","kJQP7kiw5Fk");
@@ -55,21 +55,21 @@ csPlayer.changeVideo("#video","kJQP7kiw5Fk");
 1st parameter is the selector for player.
 2nd parameter is the video id of the youtube video.
 
-### 3) play()
+### 3. play()
 This is use to play the video.
 ```js
 csPlayer.play("#video")
 ```
 Given parameter is the selector for player.
 
-### 4) play()
+### 4. play()
 This is use to pause the video.
 ```js
 csPlayer.pause("#video")
 ```
 Given parameter is the selector for player.
 
-### 5) getDuration()
+### 5. getDuration()
 This will return duration of the video.
 ```js
 var x = csPlayer.getDuration("#video")
@@ -78,7 +78,7 @@ console.log(x); //eg: 490
 Given parameter is the selector for player.
 It will return duration time in seconds.
 
-### 6) getCurrentTime()
+### 6. getCurrentTime()
 This will return current time of the video.
 ```js
 var x = csPlayer.getCurrentTime("#video")
@@ -87,7 +87,7 @@ console.log(x); //eg: 176
 Given parameter is the selector for player.
 It will return duration time in seconds.
 
-### 7) initialized
+### 7. initialized
 This is use to check if video is initialized or not.
 ```js
 var x = csPlayer.initialized
@@ -102,35 +102,35 @@ It will return true or false.
 - --playPauseBtnSize
 - --cornerBR
 
-### 1) --playerBg
+### 1. --playerBg
 This is for the background color of the video player.
 ```css
 #video .csPlayer{
 --playerBg: #000;
 }
 ```
-### 2) --playerColor
+### 2. --playerColor
 This is for the accent color of the video player.
 ```css
 #video .csPlayer{
 --playerColor: #e1e1e1;
 }
 ```
-### 3) --controlsHeight
+### 3. --controlsHeight
 This is for the height of controls box of the video player.
 ```css
 #video .csPlayer{
 --controlsHeight: 45px;
 }
 ```
-### 4) --playPauseBtnSize
+### 4. --playPauseBtnSize
 This is for the size of centred play/Pause button the video player.
 ```css
 #video .csPlayer{
 --playPauseBtnSize: 60px;
 }
 ```
-### 5) --cornerBR
+### 5. --cornerBR
 This is for the raidus of corners of the video player.
 ```css
 #video .csPlayer{
