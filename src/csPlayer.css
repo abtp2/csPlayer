@@ -1,0 +1,277 @@
+.csPlayer{
+--playerBg: #000;
+--controlsHeight: 45px;
+--playPauseBtnSize: 60px;
+--playerColor: #e1e1e1;
+--cornerBR: 5px;
+background: var(--playerBg);
+display: flex;
+flex-direction: column;
+justify-content: center;
+width: 100%;
+aspect-ratio: 16/9;
+margin: 0 auto;
+position: relative; 
+border: 1px solid var(--playerColor);
+border-radius: var(--cornerBR);
+}
+.csPlayer .unmuteBtn{
+background: var(--playerColor);
+color: var(--playerBg);
+position: absolute;
+top: 10px;
+left: 0;
+padding: 7px 12px;
+border-radius: 0 4px 4px 0;
+border: 3px double var(--playerBg);
+border-left: none;
+font-size: 15px;
+font-weight: 400;
+display: flex;
+align-items: center;
+z-index: 2;
+}
+.csPlayer .unmuteBtn i{
+margin-right: 8px;
+font-size: 24px;
+}
+.csPlayer .player-container{
+width: 100%;
+/* height: calc(100% - var(--controlsHeight)); */
+aspect-ratio: 16/9;
+overflow: hidden;
+position: relative;
+overflow: hidden;
+border-radius: var(--cornerBR);
+border: none;
+outline: none;
+}
+.csPlayer .player-container iframe{
+width: 2400%;
+height: 100%;
+margin-left: -1150%;
+border: none;
+outline: none;
+}
+.csPlayer .player-container span{
+width: 100%;
+height: 100%;
+background: var(--playerBg);
+position: absolute;
+z-index: 3;
+pointer-events: none;
+border-radius: var(--cornerBR);
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.csPlayer .player-container .csPlayer-hole{
+width: 100%;
+height: calc(50% - (var(--playPauseBtnSize))/2);
+position: absolute;
+background: transparent;
+z-index: 4;
+}
+.csPlayer .player-container .csPlayer-hole:nth-of-type(1){
+top: 0;
+}
+.csPlayer .player-container .csPlayer-hole:nth-of-type(2){
+bottom: 0;
+}
+.csPlayer .player-container span i{
+width: 60px;
+height: 60px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 25px;
+background: var(--playerColor);
+color: var(--playerBg);
+padding: 14px;
+border-radius: 100%;
+}
+.csPlayer .player-loading{
+background: transparent !important;
+border: 5px solid var(--playerColor) !important;
+border-bottom: 5px solid transparent !important;
+animation: spin 1s linear infinite;
+}
+@keyframes spin{
+0%{transform: rotate(0deg);}
+100%{transform: rotate(360deg);}
+}
+.csPlayer .controls{
+width: 100%;
+height: var(--controlsHeight);
+background: var(--playerBg);
+color: var(--playerColor);
+padding: 0 10px;
+display: flex;
+margin-top: calc(0px - var(--controlsHeight));
+align-items: center;
+border-radius: 0 0 var(--cornerBR) var(--cornerBR);
+pointer-events: none;
+}
+.controls-open .controls{
+pointer-events: auto !important;
+margin-top: auto !important;
+margin-bottom: 0 !important;
+transition: all 0.3s ease-in-out;
+}
+.controls-open .player-container{
+border-radius: var(--cornerBR) var(--cornerBR) 0 0;
+margin: auto;
+}
+.csPlayer .controls button{
+margin-right: 8px;
+background: transparent;
+color: var(--playerColor);
+font-size: 25px;
+border: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+}
+.csPlayer .controls #settingsBtn, .csPlayer .controls #fsBtn{
+font-size: 22px;
+}
+.csPlayer .controls .fsBtn{
+margin-right: 0;
+}
+.csPlayer .controls .timeSlider{
+--thumbHeight: 20px;
+background: var(--playerColor);
+width: 100%;
+margin-right: 5px;
+border-radius: 0.5rem;
+display: flex;
+align-items: center;
+position: relative;
+}
+.csPlayer .controls .timeSlider span{
+height: 100%;
+background: var(--playerColor);
+filter: invert(35%);
+width: 0;
+max-width: 100%;
+position: absolute;
+z-index: 1;
+pointer-events: none;
+border-radius: 0.5rem;
+}
+/* Chrome */
+.csPlayer .controls .timeSlider input{
+width: 100%;
+-webkit-appearance: none;
+appearance: none;
+background: transparent; 
+cursor: pointer;
+border-radius: 0.5rem;
+outline: 1px solid var(--playerColor);
+position: relative;
+z-index: 2;
+}
+.csPlayer .controls .timeSlider input:focus{
+outline: none;
+}
+.csPlayer .controls .timeSlider input::-webkit-slider-runnable-track{
+background: transparent;
+height: calc(var(--thumbHeight)/3);
+}
+.csPlayer .controls .timeSlider input::-webkit-slider-thumb{
+-webkit-appearance: none;
+appearance: none;
+margin-top: calc(0px - (var(--thumbHeight)/3));
+background-color: var(--playerBg);
+height: calc(var(--thumbHeight));
+width: calc(var(--thumbHeight));
+border-radius: 100%;
+border: 2px solid var(--playerColor);
+position: relative;
+z-index: 2;
+}
+/* Firefox */
+.csPlayer .controls .timeSlider input::-moz-range-track {
+background: transparent;
+height: calc(var(--thumbHeight)/3);
+}
+.csPlayer .controls .timeSlider input::-moz-range-thumb{
+margin-top: calc(0px - (var(--thumbHeight)/3));
+background-color: var(--playerBg);
+height: calc(var(--thumbHeight));
+width: calc(var(--thumbHeight));
+border-radius: 100%;
+border: 2px solid var(--playerColor);
+position: relative;
+z-index: 2;
+}
+
+.csPlayer .controls .playerTimer p{
+font-size: 12px;
+margin-right: 10px;
+}
+.csPlayer .settings{
+width: 40%;
+max-width: 200px;
+display: none;
+background: var(--playerColor);
+position: absolute;
+bottom: calc(var(--controlsHeight) - 5px);
+right: 2.5rem;
+z-index: 4;
+color: #000;
+padding: 6px;
+border-radius: 0.5rem;
+}
+.csPlayer .settings p{
+font-size: 15px;
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 8px 5px;
+}
+.csPlayer .settings p b{
+margin: 0 0 0 auto;
+font-style: normal;
+align-self: flex-end;
+font-size: 14px;
+font-weight: 400;
+opacity: 0.7;
+}
+.csPlayer .settings p i{
+opacity: 0.6;
+}
+.csPlayer .settings span{
+display: block;
+max-height: 0px;
+overflow: hidden;
+transition-timing-function: ease-out;
+display: flex;
+flex-direction: column;
+}
+.csPlayer .settings span label{
+width: 100%;
+padding: 0 5px;
+margin: 2px 0 6px 0;
+font-size: 14px;
+display: flex;
+align-items: center;
+opacity: 0.7;
+}
+.csPlayer .settings span label input{
+-webkit-appearance: none;
+appearance: none;
+background: transparent;
+box-shadow: inset 0 0 1px 0.5px var(--playerBg);
+margin: 0;
+width: 15px;
+height: 15px;
+border-radius: 100%;
+margin-right: 6px;
+}
+.csPlayer .settings span label input:checked{
+border: 5px solid var(--playerBg);
+box-shadow: none;
+}
