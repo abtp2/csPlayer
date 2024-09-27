@@ -14,6 +14,7 @@ margin: 0 auto;
 position: relative; 
 border: 1px solid var(--playerColor);
 border-radius: var(--cornerBR);
+min-width: 250px !important;
 }
 .csPlayer .unmuteBtn{
 background: var(--playerColor);
@@ -111,6 +112,7 @@ margin-top: calc(0px - var(--controlsHeight));
 align-items: center;
 border-radius: 0 0 var(--cornerBR) var(--cornerBR);
 pointer-events: none;
+overflow: hidden;
 }
 .controls-open .controls{
 pointer-events: auto !important;
@@ -133,7 +135,7 @@ align-items: center;
 justify-content: center;
 cursor: pointer;
 }
-.csPlayer .controls #settingsBtn, .csPlayer .controls #fsBtn{
+.csPlayer .controls .settingsBtn, .csPlayer .controls .fsBtn{
 font-size: 22px;
 }
 .csPlayer .controls .fsBtn{
