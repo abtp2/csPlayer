@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="../src/csPlayer.css">
+    <title>csPlayer Demo</title>
+</head>
+<body bgcolor="#181818">
+<h1>csPlayer</h1>
+<div id="video1"></div>
+<div id="video2"></div>
+<div id="video3"></div>
+
+
+<style>
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: system-ui;
+}
+h1{
+color: #fff;
+margin: 1rem auto;
+width: 100%;
+text-align: center;
+text-decoration: underline;
+}
+#video1, #video2, #video3{
+width: 95%;
+margin: 2rem auto;
+}
+</style>
+<script src="../src/csPlayer.js"></script>
+<script>
+csPlayer.init("#video1","bTqVqk7FSmY");
+csPlayer.init("#video2","kJQP7kiw5Fk");
+csPlayer.init("#video3","PqFMFVcCZgI");
+</script>
+</body>
+</html>
