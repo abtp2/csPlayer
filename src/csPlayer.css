@@ -1,9 +1,37 @@
+@import url("./icons/tabler-icons.min.css");
+
+
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+/* outline: 1px solid greenyellow !important;*/
+}
+
 .csPlayer{
 --playerBg: #000;
---controlsHeight: 45px;
---playPauseBtnSize: 60px;
 --playerColor: #e1e1e1;
---cornerBR: 5px;
+--playerBR: 5px;
+--startLoaderColor: #e1e1e1; 
+--startBtnSize: 65px;
+--startBtnBg: var(--playerColor);
+--startBtnIconColor: var(--playerBg);
+--playPauseIconColor: var(--playerColor);
+--forwardIconColor: var(--playerColor);
+--backwardIconColor: var(--playerColor);
+--sliderBg: #383838;
+--sliderThumbSize: 15px;
+--sliderThumbColor: var(--playerColor);
+--sliderSeekTrackColor: var(--playerColor);
+--sliderLoadedTrackColor: #878787;
+--currentTimeTextColor: var(--playerColor);
+--durationTextColor: var(--playerColor);
+--settingsBtnColor: var(--playerColor);
+--fullscreenBtnColor: var(--playerColor);
+--settingsBg: #181818;
+--settingsTextColor: var(--playerColor);
+--settingsInputIconBg: #4b4b4b;
+--settingsInputIconColor: var(--playerColor);
 background: var(--playerBg);
 display: flex;
 flex-direction: column;
@@ -11,269 +39,344 @@ justify-content: center;
 width: 100%;
 aspect-ratio: 16/9;
 margin: 0 auto;
+user-select: none !important;
 position: relative; 
-border: 1px solid var(--playerColor);
-border-radius: var(--cornerBR);
-min-width: 250px !important;
+border-radius: var(--playerBR);
+min-width: 270px !important;
 }
-.csPlayer .unmuteBtn{
-background: var(--playerColor);
-color: var(--playerBg);
-position: absolute;
-top: 10px;
-left: 0;
-padding: 7px 12px;
-border-radius: 0 4px 4px 0;
-border: 3px double var(--playerBg);
-border-left: none;
-font-size: 15px;
-font-weight: 400;
-display: flex;
-align-items: center;
-z-index: 2;
+.theme-youtube{
+--playerBg: #000;
+--playerColor: #e1e1e1;
+--playerBR: 5px;
+--startLoaderColor: var(--playerColor);
+--startBtnSize: 65px;
+--startBtnBg: #fe0001;
+--startBtnIconColor: var(--playerColor);
+--playPauseIconColor: var(--playerColor);
+--forwardIconColor: var(--playerColor);
+--backwardIconColor: var(--playerColor);
+--sliderBg: #383838;
+--sliderThumbSize: 15px;
+--sliderThumbColor: #fe0001;
+--sliderSeekTrackColor: #fe0001;
+--sliderLoadedTrackColor: #787672;
+--currentTimeTextColor: var(--playerColor);
+--durationTextColor: var(--playerColor);
+--settingsBtnColor: var(--playerColor);
+--fullscreenBtnColor: var(--playerColor);
+--settingsBg: #212121;
+--settingsTextColor: var(--playerColor);
+--settingsInputIconBg: #4b4b4b;
+--settingsInputIconColor: var(--playerColor);
 }
-.csPlayer .unmuteBtn i{
-margin-right: 8px;
-font-size: 24px;
+.theme-plyr{
+--playerBg: #000000;
+--playerColor: #626a76;
+--playerBR: 10px;
+--startLoaderColor: #ffffff; 
+--startBtnSize: 60px;
+--startBtnBg: #01b2ff;
+--startBtnIconColor: #ffffff;
+--playPauseIconColor: #ffffff;
+--forwardIconColor: #ffffff;
+--backwardIconColor: #ffffff;
+--sliderBg: rgba(255,255,255,0.1);
+--sliderThumbSize: 15px;
+--sliderThumbColor: #01b2ff;
+--sliderSeekTrackColor: #01b2ff;
+--sliderLoadedTrackColor: #787672;
+--currentTimeTextColor: #ffffff;
+--durationTextColor: #ffffff;
+--settingsBtnColor: #ffffff;
+--fullscreenBtnColor: #ffffff;
+--settingsBg: rgba(255,255,255,0.95);
+--settingsTextColor: #3d4049;
+--settingsInputIconBg: #d9dadc;
+--settingsInputIconColor: #01b2ff;
 }
-.csPlayer .player-container{
+.csPlayer .csPlayer-container{
 width: 100%;
-/* height: calc(100% - var(--controlsHeight)); */
 aspect-ratio: 16/9;
 overflow: hidden;
 position: relative;
 overflow: hidden;
-border-radius: var(--cornerBR);
+border-radius: var(--playerBR);
 border: none;
 outline: none;
 }
-.csPlayer .player-container iframe{
+.csPlayer .csPlayer-container iframe{
 width: 2400%;
 height: 100%;
-margin-left: -1150%;
+margin-left: -1149.9%;
 border: none;
 outline: none;
+position: absolute;
 }
-.csPlayer .player-container span{
+.csPlayer .csPlayer-container span{
 width: 100%;
 height: 100%;
-background: var(--playerBg);
+background-color: var(--playerBg);
+background-image: none;
+background-size: contain;
+background-position: center;
+background-repeat: no-repeat;
 position: absolute;
-z-index: 3;
+z-index: 5;
+display: flex;
+align-items: center;
+justify-content: center;
 pointer-events: none;
-border-radius: var(--cornerBR);
+}
+.csPlayer .csPlayer-container span i{
+display: block;
+width: var(--startBtnSize);
+height: var(--startBtnSize);
+color: var(--startBtnIconColor);
 display: flex;
 align-items: center;
 justify-content: center;
-}
-.csPlayer .player-container .csPlayer-hole{
-width: 100%;
-height: calc(50% - (var(--playPauseBtnSize))/2);
-position: absolute;
-background: transparent;
-z-index: 4;
-}
-.csPlayer .player-container .csPlayer-hole:nth-of-type(1){
-top: 0;
-}
-.csPlayer .player-container .csPlayer-hole:nth-of-type(2){
-bottom: 0;
-}
-.csPlayer .player-container span i{
-width: 60px;
-height: 60px;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 25px;
-background: var(--playerColor);
-color: var(--playerBg);
-padding: 14px;
 border-radius: 100%;
+background: var(--startBtnBg);
+font-size: calc(var(--startBtnSize)/2.5);
 }
-.csPlayer .player-loading{
+.csPlayer-loading{
+color: transparent !important;
 background: transparent !important;
-border: 5px solid var(--playerColor) !important;
-border-bottom: 5px solid transparent !important;
-animation: spin 1s linear infinite;
+border: 5px solid var(--startLoaderColor) !important;
+border-bottom-color: transparent !important;
+animation: csPlayerSpin 1s linear infinite;
 }
-@keyframes spin{
+@keyframes csPlayerSpin{
 0%{transform: rotate(0deg);}
 100%{transform: rotate(360deg);}
 }
-.csPlayer .controls{
+.csPlayer .csPlayer-container span div{
 width: 100%;
-height: var(--controlsHeight);
-background: var(--playerBg);
-color: var(--playerColor);
-padding: 0 10px;
-display: flex;
-margin-top: calc(0px - var(--controlsHeight));
-align-items: center;
-border-radius: 0 0 var(--cornerBR) var(--cornerBR);
-pointer-events: none;
-overflow: hidden;
+height: calc(50% - (var(--startBtnSize)/2));
+background: transparent !important;
+outline: none !important;
+border: none !important;
+position: absolute;
+pointer-events: auto;
 }
-.controls-open .controls{
-pointer-events: auto !important;
-margin-top: auto !important;
-margin-bottom: 0 !important;
-transition: all 0.3s ease-in-out;
+.csPlayer .csPlayer-container span div:nth-of-type(1){
+top: 0;
 }
-.controls-open .player-container{
-border-radius: var(--cornerBR) var(--cornerBR) 0 0;
-margin: auto;
+.csPlayer .csPlayer-container span div:nth-of-type(2){
+bottom: 0;
 }
-.csPlayer .controls button{
-margin-right: 8px;
+.csPlayer .csPlayer-controls-box{
+width: 100%;
+height: 100%;
+position: absolute;
+z-index: 3;
 background: transparent;
-color: var(--playerColor);
-font-size: 25px;
-border: 0;
+border-radius: var(--playerBR);
+display: none;
+align-items: flex-end;
+}
+.csPlayer-controls-open{
+background: rgba(0,0,0,0.5) !important;
+}
+.csPlayer-controls-open main{
+transform: translate(-50%,-50%) scale(1) !important;
+}
+.csPlayer-controls-open .csPlayer-controls{
+transform: scale(1) !important;
+}
+.csPlayer .csPlayer-controls-box main{
+position: absolute;
+transform: translate(-50%,-50%) scale(0);
+transition: transform 0s ease-in-out;
+top: 50%;
+left: 50%;
 display: flex;
 align-items: center;
-justify-content: center;
-cursor: pointer;
+white-space: nowrap;
 }
-.csPlayer .controls .settingsBtn, .csPlayer .controls .fsBtn{
-font-size: 22px;
+.csPlayer .csPlayer-controls-box main i{
+font-size: 2rem;
+padding: 8px;
+border-radius: 100%;
 }
-.csPlayer .controls .fsBtn{
-margin-right: 0;
+.csPlayer .csPlayer-controls-box main i:active{
+background: rgba(255,255,255,0.1);
 }
-.csPlayer .controls .timeSlider{
---thumbHeight: 20px;
-background: var(--playerColor);
+.csPlayer .csPlayer-controls-box main i.ti-rewind-backward-10{
+color: var(--backwardIconColor);
+}
+.csPlayer .csPlayer-controls-box main i.ti-rewind-forward-10{
+color: var(--forwardIconColor);
+}
+.csPlayer .csPlayer-controls-box main i.csPlayer-play-pause-btn{
+color: var(--playPauseIconColor);
+padding: 10px;
+border: 2px solid var(--playPauseIconColor);
+border-radius: 100%;
+margin: 0 3.5rem;
+}
+.csPlayer .csPlayer-controls-box .csPlayer-controls{
 width: 100%;
-margin-right: 5px;
-border-radius: 0.5rem;
+margin: 0 auto;
+background: transparent;
 display: flex;
 align-items: center;
 position: relative;
+padding: 8px 10px;
+transform: scale(0);
+transition: transform 0s ease-in-out;
 }
-.csPlayer .controls .timeSlider span{
+.csPlayer .csPlayer-controls-box .csPlayer-controls p{
+font-size: 0.9rem;
+margin: 0 0 0 4px;
+}
+.csPlayer .csPlayer-controls-box .csPlayer-controls p:nth-of-type(1){
+color: var(--currentTimeTextColor);
+}
+.csPlayer .csPlayer-controls-box .csPlayer-controls p:nth-of-type(2){
+color: var(--durationTextColor);
+}
+.csPlayer .csPlayer-controls-box .csPlayer-controls i{
+font-size: 1.4rem;
+margin: 0 0 0 6px;
+padding: 4px;
+border-radius: 6px;
+}
+.csPlayer .csPlayer-controls-box .csPlayer-controls i:active{
+background: rgba(255,255,255,0.1);
+}
+.csPlayer .csPlayer-controls-box .csPlayer-controls i.settingsBtn{
+color: var(--settingsBtnColor); 
+}
+.csPlayer .csPlayer-controls-box .csPlayer-controls i.fsBtn{
+color: var(--fullscreenBtnColor); 
+}
+.csPlayer .csPlayer-controls-box .csPlayer-controls div{
+display: flex;
+align-items: center;
+white-space: nowrap;
+width: 100%;
+height: calc(var(--sliderThumbSize)/3);
+margin: 0 5px;
+position: relative;
+background: var(--sliderBg);
+border-radius: calc(var(--sliderThumbSize)/3);
+}
+.csPlayer .csPlayer-controls-box .csPlayer-controls div span{
 height: 100%;
-background: var(--playerColor);
-filter: invert(35%);
-width: 0;
-max-width: 100%;
 position: absolute;
-z-index: 1;
-pointer-events: none;
-border-radius: 0.5rem;
+background: var(--sliderLoadedTrackColor);
+opacity: 0.5;
+border-radius: calc(var(--sliderThumbSize)/3);
 }
-/* Chrome */
-.csPlayer .controls .timeSlider input{
+.csPlayer .csPlayer-controls-box .csPlayer-controls div input{
 width: 100%;
 -webkit-appearance: none;
 appearance: none;
-background: transparent; 
-cursor: pointer;
-border-radius: 0.5rem;
-outline: 1px solid var(--playerColor);
-position: relative;
-z-index: 2;
+position: absolute;
+appearance: none; 
+background: linear-gradient(to right, var(--sliderSeekTrackColor) 0%, transparent 0%);
+border-radius: calc(var(--sliderThumbSize)/3);
 }
-.csPlayer .controls .timeSlider input:focus{
+.csPlayer .csPlayer-controls-box .csPlayer-controls div input:focus{
 outline: none;
 }
-.csPlayer .controls .timeSlider input::-webkit-slider-runnable-track{
+.csPlayer .csPlayer-controls-box .csPlayer-controls div input::-webkit-slider-runnable-track{
 background: transparent;
-height: calc(var(--thumbHeight)/3);
+height: calc(var(--sliderThumbSize)/3);
 }
-.csPlayer .controls .timeSlider input::-webkit-slider-thumb{
+.csPlayer .csPlayer-controls-box .csPlayer-controls div input::-webkit-slider-thumb{
 -webkit-appearance: none;
 appearance: none;
-margin-top: calc(0px - (var(--thumbHeight)/3));
-background-color: var(--playerBg);
-height: calc(var(--thumbHeight));
-width: calc(var(--thumbHeight));
+margin-top: calc(0px - (var(--sliderThumbSize)/3));
+background-color: var(--sliderThumbColor);
+height: calc(var(--sliderThumbSize));
+width: calc(var(--sliderThumbSize));
 border-radius: 100%;
-border: 2px solid var(--playerColor);
 position: relative;
 z-index: 2;
 }
 /* Firefox */
-.csPlayer .controls .timeSlider input::-moz-range-track {
+.csPlayer .csPlayer-controls-box .csPlayer-controls div input::-moz-range-track {
 background: transparent;
-height: calc(var(--thumbHeight)/3);
+height: calc(var(--sliderThumbSize)/3);
 }
-.csPlayer .controls .timeSlider input::-moz-range-thumb{
-margin-top: calc(0px - (var(--thumbHeight)/3));
-background-color: var(--playerBg);
-height: calc(var(--thumbHeight));
-width: calc(var(--thumbHeight));
+.csPlayer .csPlayer-controls-box .csPlayer-controls div input::-moz-range-thumb{
+margin-top: calc(0px - (var(--sliderThumbSize)/3));
+background-color: var(--sliderThumbColor);
+height: calc(var(--sliderThumbSize));
+width: calc(var(--sliderThumbSize));
 border-radius: 100%;
-border: 2px solid var(--playerColor);
 position: relative;
 z-index: 2;
 }
 
-.csPlayer .controls .playerTimer p{
-font-size: 12px;
-margin-right: 10px;
-}
-.csPlayer .settings{
-width: 40%;
+.csPlayer .csPlayer-controls-box .csPlayer-settings-box{
+width: 150px;
 max-width: 200px;
-display: none;
-background: var(--playerColor);
 position: absolute;
-bottom: calc(var(--controlsHeight) - 5px);
-right: 2.5rem;
-z-index: 4;
-color: #000;
-padding: 6px;
-border-radius: 0.5rem;
+bottom: 40px;
+right: 50px;
+padding: 4px 10px;
+background: var(--settingsBg);
+border-radius: 5px;
+display: none;
+pointer-events: auto;
 }
-.csPlayer .settings p{
-font-size: 15px;
+.csPlayer .csPlayer-controls-box .csPlayer-settings-box p{
 width: 100%;
+color: var(--settingsTextColor);
+font-size: 14px;
 display: flex;
 align-items: center;
-justify-content: center;
-padding: 8px 5px;
+justify-content: flex-start;
+padding: 8px 0;
 }
-.csPlayer .settings p b{
+.csPlayer .csPlayer-controls-box .csPlayer-settings-box p b{
+font-weight: normal;
 margin: 0 0 0 auto;
-font-style: normal;
-align-self: flex-end;
-font-size: 14px;
-font-weight: 400;
-opacity: 0.7;
-}
-.csPlayer .settings p i{
+padding-left: 15px;
 opacity: 0.6;
 }
-.csPlayer .settings span{
+.csPlayer .csPlayer-controls-box .csPlayer-settings-box p i{
+font-size: 16px;
+opacity: 0.8;
+}
+.csPlayer .csPlayer-controls-box .csPlayer-settings-box span{
 display: block;
 max-height: 0px;
+transition: max-height 0.3s ease-in-out;
 overflow: hidden;
-transition-timing-function: ease-out;
 display: flex;
 flex-direction: column;
 }
-.csPlayer .settings span label{
+.csPlayer .csPlayer-controls-box .csPlayer-settings-box span label{
 width: 100%;
-padding: 0 5px;
-margin: 2px 0 6px 0;
-font-size: 14px;
 display: flex;
-align-items: center;
-opacity: 0.7;
+align-self: center;
+font-size: 13px;
+color: var(--settingsTextColor);
+margin: 6px 0;
+opacity: 0.8;
+letter-spacing: 1px;
 }
-.csPlayer .settings span label input{
+.csPlayer .csPlayer-controls-box .csPlayer-settings-box span label input[type="radio"]{
 -webkit-appearance: none;
 appearance: none;
-background: transparent;
-box-shadow: inset 0 0 1px 0.5px var(--playerBg);
+background: var(--settingsInputIconBg);
 margin: 0;
 width: 15px;
 height: 15px;
 border-radius: 100%;
 margin-right: 6px;
+opacity: 1;
 }
-.csPlayer .settings span label input:checked{
-border: 5px solid var(--playerBg);
-box-shadow: none;
+.csPlayer .csPlayer-controls-box .csPlayer-settings-box span label input[type="radio"]:checked{
+border: 5px solid var(--settingsInputIconColor);
 }
+
+
+
+
+
+

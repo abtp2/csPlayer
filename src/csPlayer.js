@@ -1,5 +1,5 @@
 //custom script 
-function $(selector){
+function $(selector,parent){
 var x;
 try{
 const elements = document.querySelectorAll(selector);
@@ -12,101 +12,136 @@ x = error;
 }
 
 
-var csPlayers = {};
-var isPlaying = false;
-var resetcsPlayer;
-const iconLibUrl ="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css";
-function pauseVideoWithPromise(videoTag){
+var csPlayer ={
+iconLibUrl: "https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css",
+csPlayers : {},
+preSetup: (videoTag,playerTagId,defaultId)=>{
+var theme =("theme" in csPlayer.csPlayers[videoTag]["params"]) ? csPlayer.csPlayers[videoTag]["params"]["theme"] : null;
+var themeClass = theme ? "theme-"+theme : "";
+    return new Promise((resolve, reject) => {
+    $("#"+videoTag).innerHTML =`
+      <div class="csPlayer ${themeClass}">
+<div class="csPlayer-container">
+ <span><div></div>
+ <i class="ti ti-player-play-filled csPlayer-loading"></i>
+ <div></div></span>
+ <div id=${playerTagId}></div>
+</div>
+<div class="csPlayer-controls-box">
+  <main>
+  <i class="ti ti-rewind-backward-10"></i>
+  <i class="ti csPlayer-play-pause-btn ti-player-play-filled"></i>
+  <i class="ti ti-rewind-forward-10"></i>
+  </main>
+ <div class="csPlayer-controls">
+  <p>00:00</p>
+  <div><span></span>
+  <input type="range" min="0" max="100" value="0" step="1"></div>
+  <p>00:00</p>
+  <i class="ti ti-settings settingsBtn"></i>
+  <i class="ti ti-maximize fsBtn"></i>
+ </div>
+ <div class="csPlayer-settings-box">
+  <p>Speed<b>1x</b><i class="ti ti-caret-right-filled"></i></p>
+  <span>     
+  <label><input type="radio" name=${videoTag}1>0.75x</label>
+  <label><input type="radio" name=${videoTag}1 checked>1x</label>
+  <label><input type="radio" name=${videoTag}1>1.25x</label>
+  <label><input type="radio" name=${videoTag}1>1.5x</label>
+  <label><input type="radio" name=${videoTag}1>1.75x</label>
+  <label><input type="radio" name=${videoTag}1>2x</label>
+  </span>
+  <p>Quality<b>auto</b><i class="ti ti-caret-right-filled"></i></p>
+  <span>
+  <label><input type="radio" name=${videoTag}2 checked>auto</label>
+  </span>
+ </div>
+</div>
+</div>`;    
+    resolve();
+    });//promise
+    },
+pauseVideoWithPromise:(x)=>{
+    return new Promise((resolve, reject) => {
+    try{
+    x.pauseVideo()
+    resolve('Video paused');
+    }catch(error){
+    reject('Error pausing video: ' + error);
+    }});
+    },
+YtSetup:(videoTag,playerTagId,defaultId)=>{
+var parent = document.querySelector("#"+playerTagId).closest(".csPlayer");
+var controlsTimeout = null;
 return new Promise((resolve, reject) => {
- try{
-  csPlayers[videoTag]["videoTag"].pauseVideo()
-  resolve('Video paused');
-  }catch(error){
-  reject('Error pausing video: ' + error);
-  }});
-}
-function readyPlayerFunction(videoTag,playerTagId){
-window.YT.ready(function() {
-    csPlayers[videoTag]["videoTag"] = new YT.Player(playerTagId,{
-        videoId: csPlayers[videoTag]["defaultId"],
-        playerVars: {
-            controls: 0,
-            mute: 1,
-            autoplay: 1,
-            fs: 0,
-            playsinline: 1,
-            rel: 0,
-            loop: 1,
-            cc_load_policy: 3,
-            showinfo: 0,
-            iv_load_policy: 3,
-        },
-        events: {
-            'onReady': onPlayerReady,
-        }
-    });
-});
-var playerLoader = $("#" + videoTag + " .csPlayer .player-container span");
-function onPlayerReady(event){
-$("#" + videoTag + " .csPlayer .playPauseBtn").addEventListener('click', togglePlayPause);
-$("#" + videoTag + " .csPlayer .timeSlider input").addEventListener('input', updateVideoTime);
-setTimeout(()=>{
-  pauseVideoWithPromise(videoTag)
-  .then(()=>{
-  setQualityOptions();
-  $("#" + videoTag + " .csPlayer .player-container span i").classList.remove("player-loading");
-  csPlayers[videoTag]["videoTag"].addEventListener('onStateChange', onPlayerStateChange);
+  csPlayer.csPlayers[videoTag]["videoTag"] = new YT.Player(playerTagId,{
+    videoId: csPlayer.csPlayers[videoTag]["params"]["defaultId"],
+    playerVars:{
+     controls: 0,
+     mute: 1,
+     autoplay: 1,
+     disablekb: 1,
+     color: "white",
+     fs: 0,   
+     playsinline: 1,
+     rel: 0,
+     loop: 0,
+     cc_load_policy: 3,
+     showinfo: 0,
+     iv_load_policy: 3,     
+    },
+    events:{
+     'onReady':()=>{
+csPlayer.pauseVideoWithPromise(csPlayer.csPlayers[videoTag]["videoTag"]).then(()=>{
+       parent.querySelector(".csPlayer-container iframe").addEventListener("load",()=>{ 
+       setTimeout(()=>{
+      parent.querySelector(".csPlayer-container span i").classList.remove("csPlayer-loading");
+      csPlayer.csPlayers[videoTag]["videoTag"].addEventListener('onStateChange', onPlayerStateChange);
+      parent.querySelector(".csPlayer-controls-box main i:nth-of-type(1)").addEventListener("click", backward);
+      parent.querySelector(".csPlayer-controls-box main i:nth-of-type(2)").addEventListener("click", togglePlayPause);
+      parent.querySelector(".csPlayer-controls-box main i:nth-of-type(3)").addEventListener("click", forward);           
+      setInterval(updateTextTime,1000);
+      setInterval(updateTimeSlider,1000);
+      parent.querySelector(".csPlayer-controls-box .csPlayer-controls input").addEventListener("input",updateSlider);
+      parent.querySelector(".csPlayer-controls-box .csPlayer-controls .fsBtn").addEventListener("click",toggleFullscreen);
+      document.fullscreenEnabled ? parent.querySelector(".csPlayer-controls-box .csPlayer-controls .fsBtn").style.display ="block" : parent.querySelector(".csPlayer-controls-box .csPlayer-controls .fsBtn").style.display ="none";
+      parent.querySelector(".csPlayer-controls-box .csPlayer-controls .settingsBtn").addEventListener("click",toggleSettings);
+      },2000);
+      });//iframe onload
+      });
+      }, //onReady
+    }
   });
-  // Update time slider as video play
-  setInterval(updateTimeSlider, 1000);
-  csPlayer.initialized = true;
-  }, 1000);
+  resolve();
+}); //promise
+//backward 
+function backward(){
+updateTextTime()
+updateTimeSlider()
+var currentTime = csPlayer.csPlayers[videoTag]["videoTag"].getCurrentTime();
+csPlayer.csPlayers[videoTag]["videoTag"].seekTo(Math.max(0, currentTime - 10), true);
+clearTimeout(controlsTimeout);
+controlsTimeout = setTimeout(()=>{parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");},3000);
 }
-resetcsPlayer =(videoTag)=>{
-playerLoader.style.display="flex";
-$("#" + videoTag + " .csPlayer .unmuteBtn").style.display ="flex";
-csPlayers[videoTag]["videoTag"].pauseVideo();
-$("#" + videoTag + " .csPlayer .player-container").style.pointerEvents ="auto";
-$("#" + videoTag + " .csPlayer").classList.remove("controls-open");
+//forward
+function forward(){
+updateTextTime()
+updateTimeSlider()
+var currentTime = csPlayer.csPlayers[videoTag]["videoTag"].getCurrentTime();
+csPlayer.csPlayers[videoTag]["videoTag"].seekTo(currentTime + 10, true);
+clearTimeout(controlsTimeout);
+controlsTimeout = setTimeout(()=>{parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");},3000);
 }
-
-// Play/Pause toggle functionality
+//togglePlayPause
 function togglePlayPause(){
- if(isPlaying){
- csPlayers[videoTag]["videoTag"].pauseVideo();
- $("#" + videoTag + " .csPlayer .playPauseBtn i").className ="ti ti-player-play-filled";
- }else{
- csPlayers[videoTag]["videoTag"].playVideo();
- $("#" + videoTag + " .csPlayer .playPauseBtn i").className ="ti ti-player-pause-filled";
- }
-isPlaying = !isPlaying;
-}
-//forward & backward
-$("#" + videoTag + " .csPlayer .frwdBtn").addEventListener("click",function(){
-const currentTime = csPlayers[videoTag]["videoTag"].getCurrentTime();
-csPlayers[videoTag]["videoTag"].seekTo(currentTime + 10, true);
-}); 
-$("#" + videoTag + " .csPlayer .bkwdBtn").addEventListener("click",function(){
-const currentTime = csPlayers[videoTag]["videoTag"].getCurrentTime();
-csPlayers[videoTag]["videoTag"].seekTo(Math.max(0, currentTime - 10), true);
-}); 
-//unmute video
-$("#" + videoTag + " .csPlayer .unmuteBtn").addEventListener("click", function(){
-csPlayers[videoTag]["videoTag"].unMute();
-this.style.display ="none";  
-});
-//Update slider length
-function updateSliderLength(){
-const slider = $("#" + videoTag + " .csPlayer .controls .timeSlider input");
-const tempSliderValue = slider.value;
-const progress = (tempSliderValue / slider.max) * 100;
-const loaded = (csPlayers[videoTag]["videoTag"].getVideoLoadedFraction() * 100) +"%";
-slider.style.backgroundImage = `linear-gradient(to right, var(--playerBg) ${progress}%, transparent ${progress}%)`;
-$("#" + videoTag + " .csPlayer .controls .timeSlider span").style.width =`calc(${loaded} + var(--thumbHeight))`;
-}
-$("#" + videoTag + " .csPlayer .controls .timeSlider input").addEventListener("input", (event) => {
-updateSliderLength();
-})
+if(csPlayer.csPlayers[videoTag]["isPlaying"]){
+csPlayer.csPlayers[videoTag]["videoTag"].pauseVideo();
+clearTimeout(controlsTimeout);
+}else{
+csPlayer.csPlayers[videoTag]["videoTag"].playVideo();
+clearTimeout(controlsTimeout);
+controlsTimeout = setTimeout(()=>{parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");},3000);
+}}
 //returns second to time format
 function formatTime(seconds) {
 const h = Math.floor(seconds / 3600),
@@ -119,307 +154,268 @@ function timeToSeconds(t){
 var p = t.split(":").map(Number);
 return p.length === 3 ? p[0] * 3600 + p[1] * 60 + p[2] : p[0] * 60 + p[1];
 }
-// Update time slider as video progresses
+//update text time
+function updateTextTime(){
+var currentTime = csPlayer.csPlayers[videoTag]["videoTag"].getCurrentTime();
+var duration = csPlayer.csPlayers[videoTag]["videoTag"].getDuration();
+parent.querySelector(".csPlayer-controls-box .csPlayer-controls p:nth-of-type(1)").innerHTML = formatTime(String(currentTime));
+parent.querySelector(".csPlayer-controls-box .csPlayer-controls p:nth-of-type(2)").innerHTML = formatTime(String(duration));
+}
+//update slider
 function updateTimeSlider(){
-const slider = $("#" + videoTag + " .csPlayer .controls .timeSlider input");
-var currentTime = csPlayers[videoTag]["videoTag"].getCurrentTime();
-var duration = csPlayers[videoTag]["videoTag"].getDuration();
-var percentage = (currentTime / duration) * 100;
-slider.value = percentage;
-updateSliderLength();
-$("#" + videoTag + " .csPlayer .playerTimer p").innerText =`-${formatTime(duration - currentTime)}`;
+var slider = parent.querySelector(".csPlayer-controls-box .csPlayer-controls div input");
+var currentTime = csPlayer.csPlayers[videoTag]["videoTag"].getCurrentTime();
+var duration = csPlayer.csPlayers[videoTag]["videoTag"].getDuration();
+var progress = (currentTime/duration)*100;
+var loaded = (csPlayer.csPlayers[videoTag]["videoTag"].getVideoLoadedFraction())*100;
+slider.value = progress;
+slider.style.background =`linear-gradient(to right, var(--sliderSeekTrackColor) ${progress}%, transparent ${progress}%)`;
+parent.querySelector(".csPlayer-controls-box .csPlayer-controls div span").style.width = loaded+"%";
 }
-// Change video time using the slider
-function updateVideoTime(){
-var sliderValue = $("#" + videoTag + " .csPlayer .timeSlider input").value;
-var duration = csPlayers[videoTag]["videoTag"].getDuration();
-var newTime = (sliderValue / 100) * duration;
-csPlayers[videoTag]["videoTag"].seekTo(newTime);
+function updateSlider(){
+clearTimeout(controlsTimeout);
+var slider = parent.querySelector(".csPlayer-controls-box .csPlayer-controls div input");
+var duration = csPlayer.csPlayers[videoTag]["videoTag"].getDuration();
+var progress = slider.value;
+slider.style.background =`linear-gradient(to right, var(--sliderSeekTrackColor) ${progress}%, transparent ${progress}%)`;
+csPlayer.csPlayers[videoTag]["videoTag"].seekTo((slider.value/100)*duration);
+slider.value = slider.value;
+controlsTimeout = setTimeout(()=>{parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");},3000);
 }
-//fullscreen toggle
-function toggleFullscreen(x){
-const videoContainer = $(x);  
+//fullscreen
+function toggleFullscreen(){
+const videoContainer = parent;  
 if(!document.fullscreenElement && document.fullscreenEnabled){
- $("#" + videoTag + " .csPlayer").style.borderColor ="transparent";
  if(videoContainer.requestFullscreen){
-  videoContainer.requestFullscreen();
+ videoContainer.requestFullscreen();
  }else if(videoContainer.mozRequestFullScreen){
-  videoContainer.mozRequestFullScreen();
+ videoContainer.mozRequestFullScreen();
  }else if(videoContainer.webkitRequestFullscreen){
-  videoContainer.webkitRequestFullscreen();
+ videoContainer.webkitRequestFullscreen();
  }else if(videoContainer.msRequestFullscreen){
-  videoContainer.msRequestFullscreen();
- }
-}
+ videoContainer.msRequestFullscreen();
+}}
 else if(document.fullscreenElement && document.fullscreenEnabled){
- $("#" + videoTag + " .csPlayer").style.borderColor ="var(--playerColor)";
  if(document.exitFullscreen){
-  document.exitFullscreen();
+ document.exitFullscreen();
  }else if(document.mozCancelFullScreen){
-  document.mozCancelFullScreen();
+ document.mozCancelFullScreen();
  }else if(document.webkitExitFullscreen){
-  document.webkitExitFullscreen();
+ document.webkitExitFullscreen();
  }else if(document.msExitFullscreen){
-  document.msExitFullscreen();
- }
-}else{
+ document.msExitFullscreen();
+}}else{
 console.warn("Fullscreen api not supported in your browser.");
-}} //toggle function end
-//player fullscreen
-$("#" + videoTag + " .csPlayer .fsBtn").addEventListener("click",function(){
-toggleFullscreen("#" + videoTag + " .csPlayer");
-});
-//reset settings
+}}
+//settings
 function resetSettings(){
-$("#" + videoTag + " .csPlayer .settings p").forEach(pin =>{
-pin.nextElementSibling.style.transition ="max-height 0.4s";
-pin.nextElementSibling.style.maxHeight ="0px";
+var settings = parent.querySelector(".csPlayer-controls-box .csPlayer-settings-box");
+settings.querySelectorAll("p").forEach(pin=>{
+pin.nextElementSibling.style.maxHeight ="0px"; 
 });
 }
-//player settings
-$("#" + videoTag + " .csPlayer .controls .settingsBtn").addEventListener("click", function(){
-setQualityOptions();
-if($("#" + videoTag + " .csPlayer .settings").style.display =="block"){
-resetSettings();
-$("#" + videoTag + " .csPlayer .settings").style.display ="none"; 
-}else{
-$("#" + videoTag + " .csPlayer .settings").style.display ="block";    
-}});
-document.addEventListener("click",function(event){
-if(!$("#" + videoTag + " .csPlayer .settings").contains(event.target) && !$("#" + videoTag + " .csPlayer .controls .settingsBtn").contains(event.target)){
-resetSettings();
-$("#" + videoTag + " .csPlayer .settings").style.display ="none";
-}});
-$("#" + videoTag + " .csPlayer .settings p").forEach(pin =>{
-pin.addEventListener("click", function(){
-$("#" + videoTag + " .csPlayer .settings span").forEach((y)=>{
-    y.style.transition ="max-height 0.4s";
-    y.style.maxHeight ="0";
-    });
-if(window.getComputedStyle(pin.nextElementSibling).maxHeight =="200px"){
-pin.nextElementSibling.style.transition ="max-height 0.4s";
-pin.nextElementSibling.style.maxHeight ="0px";
-}else{
-pin.nextElementSibling.style.transition ="max-height 0.5s";
-pin.nextElementSibling.style.maxHeight ="200px";
-}});
-});
-//player settings functioning
-$("#" + videoTag + " .csPlayer .settings span:nth-of-type(1) input").forEach(input =>{
-input.addEventListener("change", function(){
-var inputValue = this.parentElement.innerText;
-$("#" + videoTag + " .csPlayer .settings p:nth-of-type(1) b").innerText = inputValue;
-csPlayers[videoTag]["videoTag"].setPlaybackRate(Number(inputValue.substring(0,inputValue.length - 1)));
-});
-});
-function enableQualityChanging(){
-var input = $("#" + videoTag + " .csPlayer .settings span:nth-of-type(2) input");
-for(i=0;i < $("#" + videoTag + " .csPlayer .settings span:nth-of-type(2) input").length;i++){
-input[i].addEventListener("change", function(){
-var inputValue = this.parentElement.innerText;
-var duration = csPlayers[videoTag]["videoTag"].getDuration();
-var currentTime = csPlayers[videoTag]["videoTag"].getCurrentTime();
-$("#" + videoTag + " .csPlayer .settings p:nth-of-type(2) b").innerText = inputValue;
-//csPlayers[videoTag]["videoTag"].setPlaybackQuality(inputValue);
-csPlayers[videoTag]["videoTag"].loadVideoById(csPlayers[videoTag]["defaultId"], currentTime, inputValue);
-});
-}}
-//set options of qualities
-function setQualityOptions(){
-var qualities = csPlayers[videoTag]["videoTag"].getAvailableQualityLevels();
-const select = $("#" + videoTag + " .csPlayer .settings span:nth-of-type(2)");
+function toggleSettings(){
+const targetElement = parent.querySelector(".csPlayer-controls-box");
+var settings = parent.querySelector(".csPlayer-controls-box .csPlayer-settings-box");
+var qualities = csPlayer.csPlayers[videoTag]["videoTag"].getAvailableQualityLevels();
 for(x of qualities){
-if(!select.innerHTML.includes(x)){
-select.innerHTML +=`<label><input type="radio" name=${videoTag}2>${x}</label>`;
+if(!settings.querySelector("span:nth-of-type(2)").innerHTML.includes(x)){
+settings.querySelector("span:nth-of-type(2)").innerHTML +=`<label><input type="radio" name=${videoTag}2>${x}</label>`;
 }}
-enableQualityChanging();
+const obsrvr = new MutationObserver((mutationsList)=>{
+ mutationsList.forEach((mutation) => {
+ if(mutation.attributeName === 'class'){
+ if(!targetElement.className.includes("open")){
+ settings.style.display ="none";
+ resetSettings();
+ }}});
+});
+obsrvr.observe(targetElement,{
+ attributes: true,
+ attributeFilter: ['class'],
+});
+if(settings.style.display =="block"){
+settings.style.display ="none";
+}else{
+settings.style.display ="block";
 }
-// Detect when the video is playing or paused
+settings.addEventListener("click",()=>{
+clearTimeout(controlsTimeout);
+controlsTimeout = setTimeout(()=>{parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");},3000);
+});
+
+settings.querySelectorAll("p").forEach(pin=>{
+pin.addEventListener("click",()=>{
+ settings.querySelectorAll("p").forEach(Allpin=>{
+ Allpin.nextElementSibling.style.maxHeight ="0px";
+ });
+pin.nextElementSibling.style.maxHeight ="400px";
+});
+});
+
+settings.querySelectorAll("span:nth-of-type(1) input").forEach(spdInput=>{
+spdInput.addEventListener("change",(e)=>{
+var value = e.target.parentElement.innerText.slice(0,-1);
+settings.querySelector("p:nth-of-type(1) b").innerText = value+"x";
+csPlayer.csPlayers[videoTag]["videoTag"].setPlaybackRate(Number(value));
+});
+});
+
+settings.querySelectorAll("span:nth-of-type(2) input").forEach(qualInput=>{
+qualInput.addEventListener("change",(e)=>{
+var value = e.target.parentElement.innerText;
+try{
+var currentTime = csPlayer.csPlayers[videoTag]["videoTag"].getCurrentTime();
+settings.querySelector("p:nth-of-type(2) b").innerText = value;
+csPlayer.csPlayers[videoTag]["videoTag"].setPlaybackQuality(value);
+//csPlayer.csPlayers[videoTag]["videoTag"].loadVideoById(csPlayer.csPlayers[videoTag]["defaultId"],currentTime);
+}catch(error){
+console.error(error);
+settings.querySelector("p:nth-of-type(2) b").innerText = value;
+}});
+});
+}
+
+
+
 function onPlayerStateChange(event){
 if(event.data == YT.PlayerState.PLAYING){
-isPlaying = true;
-$("#" + videoTag + " .csPlayer .playPauseBtn i").className ="ti ti-player-pause-filled";
-$("#" + videoTag + " .csPlayer .player-container").style.pointerEvents ="none";
-playerLoader.style.display="none";
-$("#" + videoTag + " .csPlayer .player-container .csPlayer-hole:nth-of-type(1)").style.display ="none";
-$("#" + videoTag + " .csPlayer .player-container .csPlayer-hole:nth-of-type(2)").style.display ="none";
-$("#" + videoTag + " .csPlayer").classList.add("controls-open");
+csPlayer.csPlayers[videoTag]["isPlaying"] = true;
+parent.querySelector(".csPlayer-controls-box main .csPlayer-play-pause-btn").className ="ti csPlayer-play-pause-btn ti-player-pause-filled";
+parent.querySelector(".csPlayer-container span i").classList.add("csPlayer-loading");
+parent.querySelector(".csPlayer-container span").style.display ="none";
+csPlayer.csPlayers[videoTag]["videoTag"].unMute();
+parent.querySelector(".csPlayer-container").style.pointerEvents ="none";
+parent.querySelector(".csPlayer-controls-box").style.display ="flex";
+
+parent.querySelector(".csPlayer-controls-box").onclick = function(e){
+if(!parent.querySelector(".csPlayer-controls-box main").contains(e.target) && !parent.querySelector(".csPlayer-controls-box .csPlayer-controls").contains(e.target) && !parent.querySelector(".csPlayer-controls-box .csPlayer-settings-box").contains(e.target)){
+if(parent.querySelector(".csPlayer-controls-box").classList.contains("csPlayer-controls-open")){
+parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");
+clearTimeout(controlsTimeout);
+}else{/*
+ if(csPlayer.csPlayers[videoTag]["isPlaying"]){
+ csPlayer.csPlayers[videoTag]["videoTag"].pauseVideo(); 
+ }*/
+parent.querySelector(".csPlayer-controls-box").classList.add("csPlayer-controls-open");
+clearTimeout(controlsTimeout);
+controlsTimeout = setTimeout(()=>{parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");},3000);
+}}}
 }else if(event.data == YT.PlayerState.PAUSED){
-isPlaying = false;
-$("#" + videoTag + " .csPlayer .playPauseBtn i").className ="ti ti-player-play-filled";
+clearTimeout(controlsTimeout);
+csPlayer.csPlayers[videoTag]["isPlaying"] = false;
+parent.querySelector(".csPlayer-controls-box main .csPlayer-play-pause-btn").className ="ti csPlayer-play-pause-btn ti-player-play-filled";
+ if(!parent.querySelector(".csPlayer-controls-box").classList.contains("csPlayer-controls-open")){
+parent.querySelector(".csPlayer-controls-box").classList.add("csPlayer-controls-open");
 }
-if(event.data === YT.PlayerState.ENDED){
-csPlayers[videoTag]["videoTag"].loadVideoById(csPlayers[videoTag]["defaultId"], 0, $("#" + videoTag + " .csPlayer .settings p:nth-of-type(2) b").innerText);
-}
+}else if(event.data == YT.PlayerState.ENDED){
+if(csPlayer.csPlayers[videoTag]["params"]["loop"] == true){
+csPlayer.csPlayers[videoTag]["videoTag"].seekTo(0);    
+}else{
+csPlayer.csPlayers[videoTag]["videoTag"].seekTo(0); 
+csPlayer.csPlayers[videoTag]["videoTag"].pauseVideo();
+}}
 try{
-csPlayers[videoTag]["videoTag"].unloadModule("captions"); csPlayers[videoTag]["videoTag"].unloadModule("cc");
+csPlayer.csPlayers[videoTag]["videoTag"].unloadModule("captions");
+csPlayer.csPlayers[videoTag]["videoTag"].unloadModule("cc");
 }catch(exception){}
 }
-}//readyPlayerFunction ended
-
-
-
-const csPlayer = {
-initialized: false,
-preSetup: (videoTag,playerTagId)=>{
-     return new Promise((resolve, reject) => {
-      var script = document.createElement("script");
-      var link = document.createElement("link");
-      script.src = "https://www.youtube.com/iframe_api";
-      link.href = iconLibUrl;
-      link.rel = "stylesheet";
-      
-      var sPromise=new Promise((resolve,reject)=>{
-      script.onload = resolve;
-      script.onerror = reject;
-      });
-      var lPromise = new Promise((resolve,reject)=>{
-      link.onload = resolve;
-      link.onerror = reject;
-      });            
-      var firstScriptTag = document.getElementsByTagName("script")[0];
-      firstScriptTag.parentNode.insertBefore(script, firstScriptTag);
-      document.head.appendChild(link);
-      const onBothLoaded =()=>{
-      /*
-      .csPlayer
-      .unmuteBtn
-      .bkwdBtn
-      .frwdBtn
-      .playPauseBtn
-      .timeSlider
-      .playerTimer
-      .settingsBtn
-      .fsBtn
-      .settings
-       */
-      $("#"+videoTag).innerHTML =`<div class="csPlayer">
-<button class="unmuteBtn"><i class="ti ti-volume-off"></i>Unmute</button>
-<div class="player-container">
- <span><i class="ti ti-player-play-filled player-loading"></i></span>
- <div class="csPlayer-hole"></div>
- <div class="csPlayer-hole"></div>
- <div id=${playerTagId}></div>
-</div>
-<!-- Controls -->
-<div class="controls">
- <button class="bkwdBtn"><i class="ti ti-chevrons-left"></i></button> 
- <button class="playPauseBtn"><i class="ti ti-player-pause-filled"></i></button> 
- <button class="frwdBtn"><i class="ti ti-chevrons-right"></i></button> 
- <div class="timeSlider"><span></span>
- <input type="range" min="0" max="100" value="0" step="1"></div> 
- <div class="playerTimer">
- <p>-00:00</p>
- </div>  
- <button class="settingsBtn"><i class="ti ti-settings"></i></button>
- <button class="fsBtn"><i class="ti ti-maximize"></i></button>
-</div>
-<!-- settings options -->
-<div class="settings">
-<p>Speed<b>1x</b><i class="ti ti-caret-right-filled"></i></p>
- <span>     
-  <label><input type="radio" name=${videoTag}1>0.75x</label>
-  <label><input type="radio" name=${videoTag}1 checked>1x</label>
-  <label><input type="radio" name=${videoTag}1>1.25x</label>
-  <label><input type="radio" name=${videoTag}1>1.5x</label>
-  <label><input type="radio" name=${videoTag}1>1.75x</label>
-  <label><input type="radio" name=${videoTag}1>2x</label>
- </span>
-<p>Quality<b>auto</b><i class="ti ti-caret-right-filled"></i></p>
-  <span>
-  <label><input type="radio" name=${videoTag}2 checked>auto</label>
- </span>
-</div>
-</div>`;
-      resolve();
-      }//tag loaded
-      Promise.all([sPromise, lPromise]).then(onBothLoaded).catch((error) => {
-      console.error("Failed to load csPlayerScript or csPlayerLink.");
-      });
-     });//promise
     },
-readyPlayer: (videoTag,playerTagId)=>{
-   readyPlayerFunction(videoTag,playerTagId);
-    },
-init: (videoTag,defaultId)=>{
-    if(videoTag && defaultId){
-    if($("#" + videoTag) != null){
-    return new Promise((resolve, reject) => {
-csPlayer.preSetup(videoTag,playerTagId="csPlayer-"+videoTag)
-    .then(() => {
-    console.log("Player",videoTag,"initialized successfully!");
-    csPlayers[videoTag] = {}
-    csPlayers[videoTag]["videoTag"] = videoTag;
-    csPlayers[videoTag]["defaultId"] = defaultId;
-csPlayer.readyPlayer(videoTag,playerTagId="csPlayer-"+ videoTag);
-    resolve();
-    })
-    .catch((error) => {
-    console.error(error);
-    csPlayer.initialized = false;
-    });
-    });//promise
-    }else{
-    console.error("No element with",videoTag,"selector available in the document.");
-    }}else{
-    console.error("Player not initialized correctly.");
+init:(videoTag,params)=>{
+return new Promise((resolve, reject) => {
+    if(videoTag && params && ("defaultId" in params)){
+    if($("#"+videoTag)!=null){
+    if(!(videoTag in csPlayer.csPlayers)){
+    csPlayer.csPlayers[videoTag] = {}
+    csPlayer.csPlayers[videoTag]["videoTag"] = videoTag;
+    csPlayer.csPlayers[videoTag]["params"] = params;
+    if("defaultId" in params){
+    csPlayer.csPlayers[videoTag]["params"]["defaultId"] = params["defaultId"];
+    }if("loop" in params){
+    csPlayer.csPlayers[videoTag]["params"]["loop"] = params["loop"];
+    }if("thumbnail" in params){
+    csPlayer.csPlayers[videoTag]["params"]["thumbnail"] = params["thumbnail"];
+    }if("theme" in params){
+    csPlayer.csPlayers[videoTag]["params"]["theme"] = params["theme"];
     }
+    csPlayer.csPlayers[videoTag]["isPlaying"] = false;
+    csPlayer.preSetup(videoTag,playerTagId="csPlayer-"+videoTag,params["defaultId"]).then(()=>{
+    var parent = document.querySelector("#"+playerTagId).closest(".csPlayer");
+    if(("thumbnail" in csPlayer.csPlayers[videoTag]["params"])){
+    if(csPlayer.csPlayers[videoTag]["params"]["thumbnail"] == true){
+    parent.querySelector(".csPlayer-container span").style.backgroundImage =`url("https://img.youtube.com/vi/${csPlayer.csPlayers[videoTag]["params"]["defaultId"]}/maxresdefault.jpg")`;
+    }else if(csPlayer.csPlayers[videoTag]["params"]["thumbnail"] == false){
+    parent.querySelector(".csPlayer-container span").style.backgroundImage ="none";
+    }else{
+    parent.querySelector(".csPlayer-container span").style.backgroundImage =`url(${csPlayer.csPlayers[videoTag]["params"]["thumbnail"]})`;
+    }} csPlayer.YtSetup(videoTag,playerTagId="csPlayer-"+videoTag,params["defaultId"]).then(()=>{
+    csPlayer.csPlayers[videoTag]["initialized"] = true;
+    console.log("Player",videoTag,"initialized.")
+    });
+    });
+    }else{
+    console.error("Player",videoTag,"already exists.");
+    }}else{
+    console.error("No tag with id",videoTag,"available in the document.");
+    }}else{
+    console.error("Init function must have two parameters and second parameter must have defaultId.");
+    }
+resolve();});
     },
     
-changeVideo: (videoTag,videoId)=>{
+    
+pause:(videoTag)=>{
+    if(videoTag){
+    if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
+    csPlayer.csPlayers[videoTag]["videoTag"].pauseVideo();
+    }else{
+    console.error("Player",videoTag,"is not initialized yet.")
+    }}else{
+    console.error("pause function must have player id as a parameter.")
+    }
+    },
+play:(videoTag)=>{
+    if(videoTag){
+    if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
+    csPlayer.csPlayers[videoTag]["videoTag"].playVideo();
+    }else{
+    console.error("Player",videoTag,"is not initialized yet.")
+    }}else{
+    console.error("play function must have player id as a parameter.")
+    }
+    },
+getDuration:(videoTag)=>{
+    if(videoTag){
+    if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
+    return csPlayer.csPlayers[videoTag]["videoTag"].getDuration();
+    }else{
+    console.error("Player",videoTag,"is not initialized yet.")
+    }}else{
+    console.error("getDuration function must have player id as a parameter.")
+    }
+    },
+getCurrentTime:(videoTag)=>{
+    if(videoTag){
+    if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
+    return csPlayer.csPlayers[videoTag]["videoTag"].getCurrentTime();
+    }else{
+    console.error("Player",videoTag,"is not initialized yet.")
+    }}else{
+    console.error("getCurrentTime function must have player id as a parameter.")
+    }
+    },
+changeVideo:(videoTag,videoId)=>{
     if(videoTag && videoId){
-    if($("#" + videoTag) != null){
-    if(csPlayer.initialized){
-    csPlayers[videoTag]["videoTag"].loadVideoById(videoId);
-    resetcsPlayer(videoTag);
-    csPlayers[videoTag]["defaultId"] = videoId;   
+    if((videoTag in csPlayer.csPlayers)){
+    csPlayer.csPlayers[videoTag]["videoTag"].loadVideoById(videoId,0);
     }else{
-    console.error("Player not initialized yet.");
-    }}}else{
-    console.error("changeVideo function must have two parameters.")
-    }},
-pause: (videoTag)=>{
-    if(videoTag){
-    if($("#" + videoTag) != null){
-    if(csPlayer.initialized){
-    csPlayers[videoTag]["videoTag"].pauseVideo();
-    }else{
-    console.error("Player not initialized yet.");
-    }}}
-    else{
-    console.error("pause function must have a parameter.")
-    }},
-play: (videoTag)=>{
-    if(videoTag){
-    if($("#" + videoTag) != null){
-    if(csPlayer.initialized){
-    csPlayers[videoTag]["videoTag"].playVideo();
-    }else{
-    console.error("Player not initialized yet.");
-    }}}
-    else{
-    console.error("play function must have a parameter.")
-    }},
-getDuration: (videoTag)=>{
-    if(videoTag){
-    if($("#" + videoTag) != null){
-    if(csPlayer.initialized){
-    return csPlayers[videoTag]["videoTag"].getDuration();
-    }else{
-    console.error("Player not initialized yet.");
-    }}}
-    else{
-    console.error("getDuration function must have a parameter.")
-    }},
-getCurrentTime: (videoTag)=>{
-    if(videoTag){
-    if($("#" + videoTag) != null){
-    if(csPlayer.initialized){
-    return csPlayers[videoTag]["videoTag"].getCurrentTime();
-    }else{
-    console.error("Player not initialized yet.");
-    }}}
-    else{
-    console.error("getCurrentTime function must have a parameter.")
-    }},
-};
+    console.error("Player",videoTag,"is not initialized yet.")
+    }}else{
+    console.error("changeVideo function must have two parameters, first parameter as player Id and second as the new YouTube video ID.")
+    }
+    },
+}
+
+
+
+
