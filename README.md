@@ -42,7 +42,7 @@ theme: "default",
 loop: false,
 });
 ```
-1st parameter is the id of the element for player element in video player is going to play. **NOTE : This should be unique in document.**
+1st parameter is the id of the element for player element in video player is going to play. **NOTE** : This should be unique in document.
 
 2nd parameter contains various parameters, that are: 
 ##### a) defaultId
@@ -51,7 +51,7 @@ This is the default youtube video id through which player player would be loaded
 It will take the boolean values `true or false` or also you can give url for the custom thumbnail.
 ##### c) theme
 This will take the values of the themes available at csPlayer by default. Some of them are `youtube`,`plyr` and `default`.
-[Check available themes](https://csPlayer.netlify.app).
+[Check available themes](https://abtp2.github.io/csPlayer/demo/demo).
 ##### d) loop
 This will take boolean values `true` or `false`.
 
@@ -144,21 +144,47 @@ csPlayer.destroy("video")
 **NOTE** : It will remove the player inside the element(i.e. video) not the entire element from the document.
 
 ## CSS customization
-**csPlayer** can be customized through css variables. This is the list of available variables.
+csPlayer can be customized through css variables. This is the list of available variables.
 - --playerBg
 - --playerColor
-- --controlsHeight
-- --playPauseBtnSize
-- --cornerBR
+- --playerBR
+- --startLoaderColor
+- --startBtnSize
+- --startBtnBg
+- --startBtnIconColor
+- --playPauseIconColor
+- --forwardIconColor
+- --backwardIconColor
+- --sliderBg
+- --sliderThumbSize
+- --sliderThumbColor
+- --sliderSeekTrackColor
+- --sliderLoadedTrackColor
+- --currentTimeTextColor
+- --durationTextColor
+- --settingsBtnColor
+- --fullscreenBtnColor
+- --settingsBg
+- --settingsTextColor
+- --settingsInputIconBg
+- --settingsInputIconColor
+```css
+#video .csPlayer{
+--playerBg: #000;
+--playerColor: #fff;
+--settingsBg: #181818:
+}
+```
+**NOTE**: give these values inside `.csPlayer`
 
-
-## Example
+## Full Example
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script src="https://www.youtube.com/iframe_api"></script>
     <link rel="stylesheet" href="csPlayer.css">
     <title>csPlayer</title>
 </head>
@@ -167,12 +193,19 @@ csPlayer.destroy("video")
 
 <script src="csPlayer.js"></script>
 <script>
-csPlayer.init("#video","bTqVqk7FSmY")
+csPlayer.init("#video",{
+defaultId: "RKERYQwvlFw",
+thumbnail: true,
+theme: "default",
+loop: false,
+})
 </script>
 </body>
 </html>
 ```
 
+## Demo
+[Check demo for full customization](https://abtp2.github.io/csPlayer/demo/demo)
 
 ## Screenshots
 ![screenshots](https://i.ibb.co/Tqtxqp0/20240926-123313.jpg)
