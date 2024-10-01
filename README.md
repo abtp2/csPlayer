@@ -1,5 +1,6 @@
 # csPlayer
 A custom youtube video player, based on Javascript.
+
 See [demo](https://abtp2.github.io/csPlayer/demo/demo)
 
 ## Installing
