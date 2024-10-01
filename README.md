@@ -1,5 +1,6 @@
 # csPlayer
 A custom youtube video player, based on Javascript.
+See [demo](https://abtp2.github.io/csPlayer/demo/demo)
 
 ## Installing
 Firstly, include YouTube iframe api script in your document.
@@ -175,6 +176,7 @@ csPlayer can be customized through css variables. This is the list of available 
 --settingsBg: #181818:
 }
 ```
+You can create player custom theme from it.
 **NOTE**: give these values inside `.csPlayer`
 
 ## Full Example
