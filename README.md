@@ -37,7 +37,7 @@ or use them Via CDN:
 ### 1. init()
 This will initiate csPlayer in the document.
 ```js
-csPlayer.init("#video",{
+csPlayer.init("video",{
 defaultId: "RKERYQwvlFw",
 thumbnail: true,
 theme: "default",
@@ -59,7 +59,7 @@ This will take boolean values `true` or `false`.
 
 Also, user can use  `.then()` in init() to perform any action after initialization.
 ```js
-csPlayer.init("#video",{
+csPlayer.init("video",{
 defaultId: "RKERYQwvlFw",
 thumbnail: true,
 theme: "default",
@@ -91,14 +91,14 @@ Given parameter is the id of the element for player.
 ### 4. pause()
 This is use to pause the video.
 ```js
-csPlayer.pause("#video")
+csPlayer.pause("video")
 ```
 Given parameter is the id of the element for player.
 
 ### 5. getDuration()
 This will return duration of the video.
 ```js
-var x = csPlayer.getDuration("#video")
+var x = csPlayer.getDuration("video")
 console.log(x); //eg: 490
 ```
 Given parameter is the id of the element for player.
@@ -107,7 +107,7 @@ It will return duration time in seconds.
 ### 6. getCurrentTime()
 This will return current time of the video.
 ```js
-var x = csPlayer.getCurrentTime("#video")
+var x = csPlayer.getCurrentTime("video")
 console.log(x); //eg: 176
 ```
 Given parameter is the id of the element for player.
@@ -116,7 +116,7 @@ It will return duration time in seconds.
 ### 7. getVideoTitle()
 This will return title of the youtube video.
 ```js
-var x = csPlayer.getVideoTitle("#video")
+var x = csPlayer.getVideoTitle("video")
 console.log(x);
 ```
 Given parameter is the id of the element for player.
@@ -124,7 +124,7 @@ Given parameter is the id of the element for player.
 ### 8. getPlayerState()
 This will return current state of the video i.e. `playing`,`paused`,`buffering`,`cued` or `ended`.
 ```js
-var x = csPlayer.getPlayerState("#video")
+var x = csPlayer.getPlayerState("video")
 console.log(x); //eg: playing
 ```
 Given parameter is the id of the element for player.
@@ -196,7 +196,7 @@ You can create player custom theme from it.
 
 <script src="csPlayer.js"></script>
 <script>
-csPlayer.init("#video",{
+csPlayer.init("video",{
 defaultId: "RKERYQwvlFw",
 thumbnail: true,
 theme: "default",
