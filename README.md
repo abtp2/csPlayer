@@ -47,14 +47,14 @@ loop: false,
 1st parameter is the id of the element for player element in video player is going to play. **NOTE** : This should be unique in document.
 
 2nd parameter contains various parameters, that are: 
-##### a) defaultId
+#### (i) defaultId
 This is the default youtube video id through which player player would be loaded, and this is mandate.
-##### b) thumbnail
+#### (ii) thumbnail
 It will take the boolean values `true or false` or also you can give url for the custom thumbnail.
-##### c) theme
+#### (iii) theme
 This will take the values of the themes available at csPlayer by default. Some of them are `youtube`,`plyr` and `default`.
 [Check available themes](https://abtp2.github.io/csPlayer/demo/demo).
-##### d) loop
+#### (iv) loop
 This will take boolean values `true` or `false`.
 
 Also, user can use  `.then()` in init() to perform any action after initialization.
