@@ -92,9 +92,9 @@ return new Promise((resolve, reject) => {
     },
     events:{
      'onReady':()=>{
+if($("#"+videoTag) != null && videoTag){
 csPlayer.pauseVideoWithPromise(csPlayer.csPlayers[videoTag]["videoTag"]).then(()=>{
        parent.querySelector(".csPlayer-container iframe").addEventListener("load",()=>{ 
-       setTimeout(()=>{
       parent.querySelector(".csPlayer-container span i").classList.remove("csPlayer-loading");
       csPlayer.csPlayers[videoTag]["videoTag"].addEventListener('onStateChange', onPlayerStateChange);
       parent.querySelector(".csPlayer-controls-box main i:nth-of-type(1)").addEventListener("click", backward);
@@ -105,10 +105,9 @@ csPlayer.csPlayers[videoTag]["TextTimeInterval"] = setInterval(updateTextTime,10
       parent.querySelector(".csPlayer-controls-box .csPlayer-controls .fsBtn").addEventListener("click",toggleFullscreen);
       document.fullscreenEnabled ? parent.querySelector(".csPlayer-controls-box .csPlayer-controls .fsBtn").style.display ="block" : parent.querySelector(".csPlayer-controls-box .csPlayer-controls .fsBtn").style.display ="none";
       parent.querySelector(".csPlayer-controls-box .csPlayer-controls .settingsBtn").addEventListener("click",toggleSettings);
-      },2000);
       });//iframe onload
       });
-      }, //onReady
+      }}, //onReady
     }
   });
   resolve();
@@ -287,6 +286,8 @@ parent.querySelector(".csPlayer-container span").style.display ="none";
 csPlayer.csPlayers[videoTag]["videoTag"].unMute();
 parent.querySelector(".csPlayer-container").style.pointerEvents ="none";
 parent.querySelector(".csPlayer-controls-box").style.display ="flex";
+clearTimeout(controlsTimeout);
+controlsTimeout = setTimeout(()=>{parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");},3000);
 
 parent.querySelector(".csPlayer-controls-box").onclick = function(e){
 if(!parent.querySelector(".csPlayer-controls-box main").contains(e.target) && !parent.querySelector(".csPlayer-controls-box .csPlayer-controls").contains(e.target) && !parent.querySelector(".csPlayer-controls-box .csPlayer-settings-box").contains(e.target)){
@@ -347,7 +348,8 @@ return new Promise((resolve, reject) => {
     csPlayer.csPlayers[videoTag]["params"]["theme"] = params["theme"];
     }
     csPlayer.csPlayers[videoTag]["isPlaying"] = false;
-    csPlayer.csPlayers[videoTag]["playerState"] ="paused";     csPlayer.preSetup(videoTag,playerTagId="csPlayer-"+videoTag,params["defaultId"]).then(()=>{
+    csPlayer.csPlayers[videoTag]["playerState"] ="paused";
+    csPlayer.csPlayers[videoTag]["initialized"] = false; csPlayer.preSetup(videoTag,playerTagId="csPlayer-"+videoTag,params["defaultId"]).then(()=>{
     var parent = document.querySelector("#"+playerTagId).closest(".csPlayer");
     if(("thumbnail" in csPlayer.csPlayers[videoTag]["params"])){
     if(csPlayer.csPlayers[videoTag]["params"]["thumbnail"] == true || csPlayer.csPlayers[videoTag]["params"]["thumbnail"] =="true"){
@@ -358,13 +360,13 @@ return new Promise((resolve, reject) => {
     parent.querySelector(".csPlayer-container span").style.backgroundImage =`url(${csPlayer.csPlayers[videoTag]["params"]["thumbnail"]})`;
     }} csPlayer.YtSetup(videoTag,playerTagId="csPlayer-"+videoTag,params["defaultId"]).then(()=>{
     csPlayer.csPlayers[videoTag]["initialized"] = true;
-    console.log("Player",videoTag,"initialized.")
+    console.log("Player",videoTag,"initialized.");
     });
     });
     }else{
-    throw new Error("Player",videoTag,"already exists.");
+    throw new Error("Player "+videoTag+" already exists.");
     }}else{
-    throw new Error("No tag with id",videoTag,"available in the document.");
+    throw new Error("No tag with id "+videoTag+" available in the document.");
     }}else{
     throw new Error("Init function must have two parameters and second parameter must have defaultId.");
     }
@@ -377,7 +379,7 @@ pause:(videoTag)=>{
     if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
     csPlayer.csPlayers[videoTag]["videoTag"].pauseVideo();
     }else{
-    throw new Error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player "+videoTag+" is not initialized yet.")
     }}else{
     throw new Error("pause function must have player id as a parameter.")
     }
@@ -390,7 +392,7 @@ play:(videoTag)=>{
     }else{
     throw new Error("Before calling play function, the video must be played atleat once.");
     }}else{
-    throw new Error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player "+videoTag+" is not initialized yet.")
     }}else{
     throw new Error("play function must have player id as a parameter.")
     }
@@ -400,7 +402,7 @@ getDuration:(videoTag)=>{
     if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
     return csPlayer.csPlayers[videoTag]["videoTag"].getDuration();
     }else{
-    throw new Error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player "+videoTag+" is not initialized yet.")
     }}else{
     throw new Error("getDuration function must have player id as a parameter.")
     }
@@ -410,7 +412,7 @@ getCurrentTime:(videoTag)=>{
     if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
     return csPlayer.csPlayers[videoTag]["videoTag"].getCurrentTime();
     }else{
-    throw new Error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player "+videoTag+" is not initialized yet.")
     }}else{
     throw new Error("getCurrentTime function must have player id as a parameter.")
     }
@@ -420,7 +422,7 @@ getVideoTitle:(videoTag)=>{
     if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
     return csPlayer.csPlayers[videoTag]["videoTag"].getVideoData().title;
     }else{
-    throw new Error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player "+videoTag+" is not initialized yet.")
     }}else{
     throw new Error("getVideoTitle function must have player id as a parameter.")
     }
@@ -430,7 +432,7 @@ getPlayerState:(videoTag)=>{
     if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
     return csPlayer.csPlayers[videoTag]["playerState"];
     }else{
-    throw new Error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player "+videoTag+" is not initialized yet.")
     }}else{
     throw new Error("getPlayerState function must have player id as a parameter.")
     }
@@ -444,7 +446,7 @@ changeVideo:(videoTag,videoId)=>{
      throw new Error("Before calling the changeVideo function, the previous video must be played in the player.");
      }
     }else{
-    throw new Error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player "+videoTag+" is not initialized yet.")
     }}else{
     throw new Error("changeVideo function must have two parameters, first parameter as player Id and second as the new YouTube video ID.")
     }
@@ -462,9 +464,19 @@ destroy:(videoTag)=>{
      delete csPlayer.csPlayers[videoTag];
      $("#"+videoTag+" .csPlayer").remove();
     }else{
-    throw new Error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player "+videoTag+" is not initialized yet.")
     }}else{
     throw new Error("changeVideo function must have two parameters, first parameter as player Id and second as the new YouTube video ID.")
+    }
+    },
+initialized:(videoTag)=>{
+    if(videoTag){
+    if((videoTag in csPlayer.csPlayers)){        
+    return csPlayer.csPlayers[videoTag]["initialized"];
+    }else{
+    throw new Error("Player "+videoTag+" doesn't exist. ")
+    }}else{
+    throw new Error("pause function must have player id as a parameter.")
     }
     },
 }
