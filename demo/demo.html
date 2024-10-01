@@ -13,7 +13,7 @@
 <body>
 <nav>
  <span><img src="csPlayer.png"><h1>csPlayer</h1></span>
- <a href="https://github.com/abtp2/csPlayer"><img src="github.png" alt="Github-abtp2(Ashutosh_dev)"></a>
+ <a href="https://github.com/abtp2/csPlayer"><img src="github.png" alt="&nbsp;"></a>
 </nav>
 
 <form>
@@ -111,6 +111,10 @@ width: 35px;
 height: 35px;
 margin-right: 8px;
 border-radius: 6px;
+}
+nav a{
+color: #e1e1e1;
+font-size: 14px;
 }
 nav a img{
 width: 45px;
@@ -353,7 +357,7 @@ loop: ${loop},
 if(thumbnail =="true" || thumbnail =="false" || isValidUrl(thumbnail)){
 $("form button i").style.display ="block";
 $('form button[type="submit"]').setAttribute("disable","true")
-if($("#video1") != null){
+if($("#video1 .csPlayer") != null){
 csPlayer.destroy("video1");    
 }
 csPlayer.init("video1",{
@@ -428,12 +432,12 @@ show("Duration : " + x + "s");
 function getVideoTitle(){
 x = csPlayer.getVideoTitle("video1");
 clearTimeout(showInterval);
-show("Title: " + x + "s");
+show("Title: " + x);
 }
 function getPlayerState(){
 x = csPlayer.getPlayerState("video1");
 clearTimeout(showInterval);
-show("State: " + x + "s");
+show("State: " + x);
 }
 function destroy(){
 x = csPlayer.destroy("video1");
