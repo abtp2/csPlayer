@@ -100,9 +100,8 @@ csPlayer.pauseVideoWithPromise(csPlayer.csPlayers[videoTag]["videoTag"]).then(()
       parent.querySelector(".csPlayer-controls-box main i:nth-of-type(1)").addEventListener("click", backward);
       parent.querySelector(".csPlayer-controls-box main i:nth-of-type(2)").addEventListener("click", togglePlayPause);
       parent.querySelector(".csPlayer-controls-box main i:nth-of-type(3)").addEventListener("click", forward);           
-      setInterval(updateTextTime,1000);
-      setInterval(updateTimeSlider,1000);
-      parent.querySelector(".csPlayer-controls-box .csPlayer-controls input").addEventListener("input",updateSlider);
+csPlayer.csPlayers[videoTag]["TextTimeInterval"] = setInterval(updateTextTime,1000);      
+      csPlayer.csPlayers[videoTag]["TimeSliderInterval"] = setInterval(updateTimeSlider,1000);         parent.querySelector(".csPlayer-controls-box .csPlayer-controls input").addEventListener("input",updateSlider);
       parent.querySelector(".csPlayer-controls-box .csPlayer-controls .fsBtn").addEventListener("click",toggleFullscreen);
       document.fullscreenEnabled ? parent.querySelector(".csPlayer-controls-box .csPlayer-controls .fsBtn").style.display ="block" : parent.querySelector(".csPlayer-controls-box .csPlayer-controls .fsBtn").style.display ="none";
       parent.querySelector(".csPlayer-controls-box .csPlayer-controls .settingsBtn").addEventListener("click",toggleSettings);
@@ -270,7 +269,7 @@ settings.querySelector("p:nth-of-type(2) b").innerText = value;
 csPlayer.csPlayers[videoTag]["videoTag"].setPlaybackQuality(value);
 //csPlayer.csPlayers[videoTag]["videoTag"].loadVideoById(csPlayer.csPlayers[videoTag]["defaultId"],currentTime);
 }catch(error){
-console.error(error);
+throw new Error(error);
 settings.querySelector("p:nth-of-type(2) b").innerText = value;
 }});
 });
@@ -281,6 +280,7 @@ settings.querySelector("p:nth-of-type(2) b").innerText = value;
 function onPlayerStateChange(event){
 if(event.data == YT.PlayerState.PLAYING){
 csPlayer.csPlayers[videoTag]["isPlaying"] = true;
+csPlayer.csPlayers[videoTag]["playerState"] ="playing";
 parent.querySelector(".csPlayer-controls-box main .csPlayer-play-pause-btn").className ="ti csPlayer-play-pause-btn ti-player-pause-filled";
 parent.querySelector(".csPlayer-container span i").classList.add("csPlayer-loading");
 parent.querySelector(".csPlayer-container span").style.display ="none";
@@ -293,27 +293,35 @@ if(!parent.querySelector(".csPlayer-controls-box main").contains(e.target) && !p
 if(parent.querySelector(".csPlayer-controls-box").classList.contains("csPlayer-controls-open")){
 parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");
 clearTimeout(controlsTimeout);
-}else{/*
- if(csPlayer.csPlayers[videoTag]["isPlaying"]){
- csPlayer.csPlayers[videoTag]["videoTag"].pauseVideo(); 
- }*/
+}else{
 parent.querySelector(".csPlayer-controls-box").classList.add("csPlayer-controls-open");
 clearTimeout(controlsTimeout);
 controlsTimeout = setTimeout(()=>{parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");},3000);
 }}}
+parent.querySelector(".csPlayer-controls-box .csPlayer-controls").addEventListener("click", ()=>{
+clearTimeout(controlsTimeout);
+controlsTimeout = setTimeout(()=>{parent.querySelector(".csPlayer-controls-box").classList.remove("csPlayer-controls-open");},3000);
+});
+
 }else if(event.data == YT.PlayerState.PAUSED){
 clearTimeout(controlsTimeout);
 csPlayer.csPlayers[videoTag]["isPlaying"] = false;
+csPlayer.csPlayers[videoTag]["playerState"] ="paused";
 parent.querySelector(".csPlayer-controls-box main .csPlayer-play-pause-btn").className ="ti csPlayer-play-pause-btn ti-player-play-filled";
  if(!parent.querySelector(".csPlayer-controls-box").classList.contains("csPlayer-controls-open")){
 parent.querySelector(".csPlayer-controls-box").classList.add("csPlayer-controls-open");
 }
+}else if(event.data == YT.PlayerState.BUFFERING){
+csPlayer.csPlayers[videoTag]["playerState"] ="buffering";
+}else if(event.data == YT.PlayerState.CUED){
+csPlayer.csPlayers[videoTag]["playerState"] ="cued";
 }else if(event.data == YT.PlayerState.ENDED){
-if(csPlayer.csPlayers[videoTag]["params"]["loop"] == true){
+if(csPlayer.csPlayers[videoTag]["params"]["loop"] == true || csPlayer.csPlayers[videoTag]["params"]["loop"] =="true"){
 csPlayer.csPlayers[videoTag]["videoTag"].seekTo(0);    
 }else{
 csPlayer.csPlayers[videoTag]["videoTag"].seekTo(0); 
 csPlayer.csPlayers[videoTag]["videoTag"].pauseVideo();
+csPlayer.csPlayers[videoTag]["playerState"] ="ended";
 }}
 try{
 csPlayer.csPlayers[videoTag]["videoTag"].unloadModule("captions");
@@ -339,12 +347,12 @@ return new Promise((resolve, reject) => {
     csPlayer.csPlayers[videoTag]["params"]["theme"] = params["theme"];
     }
     csPlayer.csPlayers[videoTag]["isPlaying"] = false;
-    csPlayer.preSetup(videoTag,playerTagId="csPlayer-"+videoTag,params["defaultId"]).then(()=>{
+    csPlayer.csPlayers[videoTag]["playerState"] ="paused";     csPlayer.preSetup(videoTag,playerTagId="csPlayer-"+videoTag,params["defaultId"]).then(()=>{
     var parent = document.querySelector("#"+playerTagId).closest(".csPlayer");
     if(("thumbnail" in csPlayer.csPlayers[videoTag]["params"])){
-    if(csPlayer.csPlayers[videoTag]["params"]["thumbnail"] == true){
+    if(csPlayer.csPlayers[videoTag]["params"]["thumbnail"] == true || csPlayer.csPlayers[videoTag]["params"]["thumbnail"] =="true"){
     parent.querySelector(".csPlayer-container span").style.backgroundImage =`url("https://img.youtube.com/vi/${csPlayer.csPlayers[videoTag]["params"]["defaultId"]}/maxresdefault.jpg")`;
-    }else if(csPlayer.csPlayers[videoTag]["params"]["thumbnail"] == false){
+    }else if(csPlayer.csPlayers[videoTag]["params"]["thumbnail"] == false || csPlayer.csPlayers[videoTag]["params"]["thumbnail"] =="false"){
     parent.querySelector(".csPlayer-container span").style.backgroundImage ="none";
     }else{
     parent.querySelector(".csPlayer-container span").style.backgroundImage =`url(${csPlayer.csPlayers[videoTag]["params"]["thumbnail"]})`;
@@ -354,11 +362,11 @@ return new Promise((resolve, reject) => {
     });
     });
     }else{
-    console.error("Player",videoTag,"already exists.");
+    throw new Error("Player",videoTag,"already exists.");
     }}else{
-    console.error("No tag with id",videoTag,"available in the document.");
+    throw new Error("No tag with id",videoTag,"available in the document.");
     }}else{
-    console.error("Init function must have two parameters and second parameter must have defaultId.");
+    throw new Error("Init function must have two parameters and second parameter must have defaultId.");
     }
 resolve();});
     },
@@ -369,19 +377,22 @@ pause:(videoTag)=>{
     if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
     csPlayer.csPlayers[videoTag]["videoTag"].pauseVideo();
     }else{
-    console.error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player",videoTag,"is not initialized yet.")
     }}else{
-    console.error("pause function must have player id as a parameter.")
+    throw new Error("pause function must have player id as a parameter.")
     }
     },
 play:(videoTag)=>{
     if(videoTag){
     if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
+    if(!csPlayer.csPlayers[videoTag]["videoTag"].isMuted()){
     csPlayer.csPlayers[videoTag]["videoTag"].playVideo();
     }else{
-    console.error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Before calling play function, the video must be played atleat once.");
     }}else{
-    console.error("play function must have player id as a parameter.")
+    throw new Error("Player",videoTag,"is not initialized yet.")
+    }}else{
+    throw new Error("play function must have player id as a parameter.")
     }
     },
 getDuration:(videoTag)=>{
@@ -389,9 +400,9 @@ getDuration:(videoTag)=>{
     if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
     return csPlayer.csPlayers[videoTag]["videoTag"].getDuration();
     }else{
-    console.error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player",videoTag,"is not initialized yet.")
     }}else{
-    console.error("getDuration function must have player id as a parameter.")
+    throw new Error("getDuration function must have player id as a parameter.")
     }
     },
 getCurrentTime:(videoTag)=>{
@@ -399,19 +410,61 @@ getCurrentTime:(videoTag)=>{
     if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
     return csPlayer.csPlayers[videoTag]["videoTag"].getCurrentTime();
     }else{
-    console.error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player",videoTag,"is not initialized yet.")
     }}else{
-    console.error("getCurrentTime function must have player id as a parameter.")
+    throw new Error("getCurrentTime function must have player id as a parameter.")
+    }
+    },
+getVideoTitle:(videoTag)=>{
+    if(videoTag){
+    if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
+    return csPlayer.csPlayers[videoTag]["videoTag"].getVideoData().title;
+    }else{
+    throw new Error("Player",videoTag,"is not initialized yet.")
+    }}else{
+    throw new Error("getVideoTitle function must have player id as a parameter.")
+    }
+    },
+getPlayerState:(videoTag)=>{
+    if(videoTag){
+    if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
+    return csPlayer.csPlayers[videoTag]["playerState"];
+    }else{
+    throw new Error("Player",videoTag,"is not initialized yet.")
+    }}else{
+    throw new Error("getPlayerState function must have player id as a parameter.")
     }
     },
 changeVideo:(videoTag,videoId)=>{
     if(videoTag && videoId){
-    if((videoTag in csPlayer.csPlayers)){
-    csPlayer.csPlayers[videoTag]["videoTag"].loadVideoById(videoId,0);
+    if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
+     if(!csPlayer.csPlayers[videoTag]["videoTag"].isMuted()){
+     csPlayer.csPlayers[videoTag]["videoTag"].loadVideoById(videoId,0);
+     }else{
+     throw new Error("Before calling the changeVideo function, the previous video must be played in the player.");
+     }
     }else{
-    console.error("Player",videoTag,"is not initialized yet.")
+    throw new Error("Player",videoTag,"is not initialized yet.")
     }}else{
-    console.error("changeVideo function must have two parameters, first parameter as player Id and second as the new YouTube video ID.")
+    throw new Error("changeVideo function must have two parameters, first parameter as player Id and second as the new YouTube video ID.")
+    }
+    },
+destroy:(videoTag)=>{
+    if(videoTag){
+    if((videoTag in csPlayer.csPlayers) && csPlayer.csPlayers[videoTag]["initialized"] == true){
+     if("TimeSliderInterval" in csPlayer.csPlayers[videoTag]){
+     clearInterval(csPlayer.csPlayers[videoTag]["TimeSliderInterval"]);    
+     }
+     if("TextTimeInterval" in csPlayer.csPlayers[videoTag]){
+     clearInterval(csPlayer.csPlayers[videoTag]["TextTimeInterval"]);   
+     }
+     csPlayer.csPlayers[videoTag]["videoTag"].destroy();
+     delete csPlayer.csPlayers[videoTag];
+     $("#"+videoTag+" .csPlayer").remove();
+    }else{
+    throw new Error("Player",videoTag,"is not initialized yet.")
+    }}else{
+    throw new Error("changeVideo function must have two parameters, first parameter as player Id and second as the new YouTube video ID.")
     }
     },
 }

@@ -44,6 +44,31 @@ position: relative;
 border-radius: var(--playerBR);
 min-width: 270px !important;
 }
+.theme-default{
+--playerBg: #000;
+--playerColor: #e1e1e1;
+--playerBR: 5px;
+--startLoaderColor: #e1e1e1; 
+--startBtnSize: 65px;
+--startBtnBg: var(--playerColor);
+--startBtnIconColor: var(--playerBg);
+--playPauseIconColor: var(--playerColor);
+--forwardIconColor: var(--playerColor);
+--backwardIconColor: var(--playerColor);
+--sliderBg: #383838;
+--sliderThumbSize: 15px;
+--sliderThumbColor: var(--playerColor);
+--sliderSeekTrackColor: var(--playerColor);
+--sliderLoadedTrackColor: #878787;
+--currentTimeTextColor: var(--playerColor);
+--durationTextColor: var(--playerColor);
+--settingsBtnColor: var(--playerColor);
+--fullscreenBtnColor: var(--playerColor);
+--settingsBg: #181818;
+--settingsTextColor: var(--playerColor);
+--settingsInputIconBg: #4b4b4b;
+--settingsInputIconColor: var(--playerColor);
+}
 .theme-youtube{
 --playerBg: #000;
 --playerColor: #e1e1e1;
@@ -107,7 +132,7 @@ outline: none;
 .csPlayer .csPlayer-container iframe{
 width: 2400%;
 height: 100%;
-margin-left: -1149.9%;
+margin-left: -1149.95%;
 border: none;
 outline: none;
 position: absolute;
