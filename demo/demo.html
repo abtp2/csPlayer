@@ -3,40 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/base16/grayscale-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
     <link rel="stylesheet" href="../src/csPlayer.css">
     <title>csPlayer Demo</title>
 </head>
-<body bgcolor="#181818">
-<h1>csPlayer</h1>
-<div id="video1"></div>
-<div id="video2"></div>
-<div id="video3"></div>
+<body>
+<nav>
+ <span><img src="csPlayer.png"><h1>csPlayer</h1></span>
+ <a href="https://github.com/abtp2/csPlayer"><img src="github.png" alt="Github-abtp2(Ashutosh_dev)"></a>
+</nav>
 
+<form>
+ <div>
+  <span><p>Change Video</p><input type="text" placeholder="YT video id"></span>
+  <span><p>Thumbnail</p><input type="text" placeholder="url or true/false"></span>
+  <span><p>Theme</p><select><option selected>default</option><option>youtube</option><option>plyr</option></select></span>
+  <span><p>Loop</p><select><option>true</option><option selected>false</option></select></span>
+ </div>
+ <div>
+  <button type="button" onclick="play()">Play</button>
+  <button type="button" onclick="pause()">Pause</button>
+  <button type="button" onclick="getCurrentTime()">Get current time</button>
+  <button type="button" onclick="getDuration()">Get duration</button>
+  <button type="button" onclick="getVideoTitle()">Get video title</button>
+  <button type="button" onclick="getPlayerState()">Get player state</button>
+  <button type="button" onclick="destroy()">Destroy</button>
+ </div>
+ <button type="submit">Insert Changes<i></i></button>
+</form>
+
+<div class="container">
+<div class="video-box">
+ <div id="video1" class="video"></div>
+ <h1></h1> 
+</div>
+
+<div class="code-box">
+ <b id="copy">Copy code</b>
+ <pre><code class="language-html">&lthtml&gt
+&lthead&gt
+  &ltlink rel="stylesheet" href="../src/csPlayer.css"&gt
+  &ltscript src="https://www.youtube.com/iframe_api"&gt&lt/script&gt
+&lt/head&gt
+&ltbody&gt
+&ltdiv id="video1"&gt&lt/div&gt
+
+&ltscript src="../src/csPlayer.js"&gt&lt/script&gt
+&ltscript&gt
+csPlayer.init("video1",{
+defaultId: "RKERYQwvlFw",
+thumbnail: true,
+theme: "default",
+loop: false,
+});
+// Example methods:
+// csPlayer.play("video1")
+// csPlayer.pause("video1")
+// csPlayer.getCurrentTime("video1")
+// csPlayer.getDuration("video1")
+// csPlayer.getVideoTitle("video1")
+// csPlayer.getPlayerState("video1")
+// csPlayer.changeVideo("video1","bTqVqk7FSmY")
+// csPlayer.destroy("video1")
+&lt/script&gt
+&lt/body&gt
+&lthtml&gt</code></pre>
+</div>
+</div>
 
 <style>
 *{
 margin: 0;
 padding: 0;
 box-sizing: border-box;
-font-family: system-ui;
+font-family: arial;
+/* outline: 1px solid greenyellow; */
 }
-h1{
+html,body{
+background: #181818;
+}
+body{
+max-width: 1400px;
+margin: 0 auto;
+}
+nav{
+width: 90%;
+margin: 0 auto;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0.8rem 0;
+border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+nav span{
+display: flex;
+align-items: center;
+}
+nav span h1{
 color: #fff;
-margin: 1rem auto;
+font-size: 25px;
+}
+nav span img{
+width: 35px;
+height: 35px;
+margin-right: 8px;
+border-radius: 6px;
+}
+nav a img{
+width: 45px;
+border-radius: 100%;
+}
+form{
+width: 90%;
+margin: 2rem auto 0 auto;
+background: rgba(255,255,255,0.1);
+padding: 10px 12px;
+border-radius: 5px;
+}
+form div:nth-of-type(1){
 width: 100%;
-text-align: center;
-text-decoration: underline;
+display: flex;
+align-items: center;
+flex-wrap: wrap;
 }
-#video1, #video2, #video3{
-width: 95%;
-margin: 2rem auto;
+form div span{
+display: flex;
+flex-direction: column;
+margin: 5px 10px 8px 0;
 }
+form div span p{
+color: #e1e1e1;
+font-size: 13px;
+opacity: 0.8;
+margin-bottom: 5px;
+}
+form div span input{
+width: 130px;
+padding: 10px 12px;
+color: #d2d2d2;
+background: rgba(0,0,0,0.35);
+border: none;
+border-radius: 3px;
+outline: none;
+}
+form div span select{
+width: 130px;
+padding: 10px 5px;
+color: #a3a3a3;
+background: rgba(0,0,0,0.35);
+border: none;
+border-radius: 3px;
+outline: none;
+}
+form div span select option{
+background: #000;
+color: #a3a3a3;
+}
+
+form div:nth-of-type(2){
+width: 100%;
+display: flex;
+align-items: center;
+flex-wrap: wrap;
+margin-top: 10px;
+}
+form div button{
+padding: 8px 12px;
+background: rgba(255,255,255,0.1);
+color: #e1e1e1;
+border: none;
+border-radius: 3px;
+box-shadow: 1px 1px 4px 1px rgba(0,0,0,0.22);
+font-size: 13px; 
+display: flex;
+align-items: center;
+margin: 5px 10px 5px 0;
+}
+form button[type="submit"]{
+margin-top: 2rem;
+padding: 12px 15px;
+background: rgba(0,0,0,0.5);
+color: #e1e1e1;
+border: none;
+border-radius: 4px;
+font-size: 14px; 
+display: flex;
+align-items: center;
+transition: all 0.1s;
+}
+form button[type="submit"]:active{
+background: #000;
+color: #e1e1e1;
+}
+form button[type="submit"] i{
+width: 15px;
+height: 15px;
+border-radius: 100%;
+border: 2px solid #e1e1e1;
+border-bottom: 2px solid transparent;
+margin-left: 8px;
+animation: spin 0.6s linear infinite;
+display: none; 
+}
+
+@keyframes spin{
+0%{transform: rotate(0deg)}
+100%{transform: rotate(360deg)}
+}
+.container{
+width: 90%;
+margin: 1rem auto;
+border-radius: 5px;
+display: flex;
+gap: 1rem;
+flex-direction: column;
+justify-content: flex-start;
+}
+.video-box{
+width: 100%;
+height: 100%;
+background: rgba(255,255,255,0.1);
+display: flex;
+flex-wrap: wrap;
+padding: 12px;
+}
+.video-box h1{
+font-size: 16px;
+color: #e1e1e1;
+opacity: 1;
+margin-top: 15px;
+font-weight: 500;
+letter-spacing: 0.2px;
+}
+.video-box .video{
+width: 100%;
+aspect-ratio: 16/9;
+margin:0 auto;
+background: transparent;
+}
+.code-box{
+width: 100%;
+height: 100%;
+background: rgba(255,255,255,0.1);
+display: flex;
+flex-wrap: wrap;
+padding: 12px;
+position: relative; 
+}
+.code-box b{
+padding: 5px 10px;
+font-size: 13px;
+background: rgba(255,255,255,0.1);
+position: absolute;
+right: 18px;
+top: 18px;
+border-radius: 2px;
+color: #e1e1e1;
+font-weight: normal;
+cursor: pointer;
+}
+.code-box pre{
+display: block;
+width: 100%;
+height: 100%;
+margin: 0 auto;
+line-height: 22px;
+overflow: auto;
+}
+.code-box pre code{
+padding: 14px;
+font-size: 14px; 
+font-weight: 400;
+letter-spacing: 0.5px;
+}
+@media(min-width:700px){
+.container{
+flex-direction: row;
+align-items: stretch;
+}
+.video-box , .code-box{
+width: 50%;
+}}
 </style>
 <script src="../src/csPlayer.js"></script>
 <script>
-csPlayer.init("#video1","bTqVqk7FSmY");
-csPlayer.init("#video2","kJQP7kiw5Fk");
-csPlayer.init("#video3","PqFMFVcCZgI");
+//custom script 
+function $(selector,parent){
+var x;
+try{
+const elements = document.querySelectorAll(selector);
+if(elements.length == 1){x = elements[0]}
+else if(elements.length == 0){x = null}
+else{x = elements}
+}catch(error){
+x = error;
+}return x;
+}
+csPlayer.init("video1",{
+defaultId: "RKERYQwvlFw",
+thumbnail: true,
+theme: "default",
+loop: false,
+});
+
+
+$("form").onsubmit = function(e){
+e.preventDefault();
+const isValidUrl = (string)=>{
+if(string !=""){
+return!!string.match(/^(https?:\/\/)?((([a-zA-Z0-9_-]+)\.)+[a-zA-Z]{2,})(\:[0-9]{1,5})?(\/.*)?$/i);
+}}
+var id = $("form div:nth-of-type(1) span:nth-of-type(1) input").value !="" ? $("form div:nth-of-type(1) span:nth-of-type(1) input").value : "RKERYQwvlFw";
+var thumbnail = $("form div:nth-of-type(1) span:nth-of-type(2) input").value !="" ? $("form div:nth-of-type(1) span:nth-of-type(2) input").value : "true";
+var rethumbnail = isValidUrl(thumbnail) ? `"${thumbnail}"` : thumbnail;
+var theme = $("form div:nth-of-type(1) span:nth-of-type(3) select").value;
+var loop = $("form div:nth-of-type(1) span:nth-of-type(4) select").value;
+var code =`&lthtml&gt
+&lthead&gt
+  &ltlink rel="stylesheet" href="../src/csPlayer.css"&gt
+  &ltscript src="https://www.youtube.com/iframe_api"&gt&lt/script&gt
+&lt/head&gt
+&ltbody&gt
+&ltdiv id="video1"&gt&lt/div&gt
+
+&ltscript src="../src/csPlayer.js"&gt&lt/script&gt
+&ltscript&gt
+csPlayer.init("video1",{
+defaultId: "${id}",
+thumbnail: ${rethumbnail},
+theme: "${theme}",
+loop: ${loop},
+});
+// Example methods:
+// csPlayer.play("video1")
+// csPlayer.pause("video1")
+// csPlayer.getCurrentTime("video1")
+// csPlayer.getDuration("video1")
+// csPlayer.getVideoTitle("video1")
+// csPlayer.getPlayerState("video1")
+// csPlayer.changeVideo("video1","bTqVqk7FSmY")
+// csPlayer.destroy("video1")
+&lt/script&gt
+&lt/body&gt
+&lthtml&gt
+`;
+if(thumbnail =="true" || thumbnail =="false" || isValidUrl(thumbnail)){
+$("form button i").style.display ="block";
+$('form button[type="submit"]').setAttribute("disable","true")
+if($("#video1") != null){
+csPlayer.destroy("video1");    
+}
+csPlayer.init("video1",{
+defaultId: id,
+thumbnail: thumbnail,
+theme: theme,
+loop: loop,
+}).then(()=>{
+$(".container .code-box pre").innerHTML =`<code>${code}</code>`;
+hljs.highlightAll();
+setTimeout(()=>{
+$("form button i").style.display ="none";
+$('form button[type="submit"]').removeAttribute("disable");
+},1000);});
+}else{
+alert("Thumbnail's value must be a valid URL or true or false")
+}}
+
+
+
+//copy code
+$("#copy").addEventListener("click",()=>{
+const code = event.target;
+const text = $(".container .code-box pre code").innerText;
+if(navigator.clipboard && navigator.clipboard.writeText){
+navigator.clipboard.writeText(text).then(()=>{
+code.innerHTML ="Copied!";
+setTimeout(()=>{code.innerHTML ="Copy code";},1500);
+})
+}else{
+const textarea = document.createElement('textarea');
+textarea.value = text;
+document.body.appendChild(textarea);
+textarea.select();
+textarea.setSelectionRange(0, 99999);
+try{
+ document.execCommand('copy');
+ code.innerHTML ="Copied!";
+ setTimeout(()=>{code.innerHTML ="Copy code";},1500);
+}catch(err){
+ alert("Your browser doesn't support to copy text.")
+}
+document.body.removeChild(textarea);
+}});
+
+//to show
+var showInterval;
+function show(text){
+$(".video-box h1").innerHTML = text;
+showInterval = setTimeout(()=>{
+$(".video-box h1").innerHTML ="";
+},2500);  
+}
+
+//button functions
+function play(){
+csPlayer.play("video1");   
+}
+function pause(){
+csPlayer.pause("video1");    
+}
+function getCurrentTime(){
+x = csPlayer.getCurrentTime("video1");
+clearTimeout(showInterval);
+show("Current time: " + x + "s");
+}
+function getDuration(){
+x = csPlayer.getDuration("video1");
+clearTimeout(showInterval);
+show("Duration : " + x + "s");
+}
+function getVideoTitle(){
+x = csPlayer.getVideoTitle("video1");
+clearTimeout(showInterval);
+show("Title: " + x + "s");
+}
+function getPlayerState(){
+x = csPlayer.getPlayerState("video1");
+clearTimeout(showInterval);
+show("State: " + x + "s");
+}
+function destroy(){
+x = csPlayer.destroy("video1");
+clearTimeout(showInterval);
+show("Destroyed!");
+}
 </script>
 </body>
 </html>
