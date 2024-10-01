@@ -211,4 +211,4 @@ loop: false,
 [Check demo for full customization](https://abtp2.github.io/csPlayer/demo/demo)
 
 ## Screenshots
-![screenshots](https://i.ibb.co/Tqtxqp0/20240926-123313.jpg)
+![screenshots](https://i.ibb.co/928j3QH/20241001-213604.jpg)
