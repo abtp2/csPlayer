@@ -13,7 +13,6 @@ x = error;
 
 
 var csPlayer ={
-iconLibUrl: "https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css",
 csPlayers : {},
 preSetup: (videoTag,playerTagId,defaultId)=>{
 var theme =("theme" in csPlayer.csPlayers[videoTag]["params"]) ? csPlayer.csPlayers[videoTag]["params"]["theme"] : null;
